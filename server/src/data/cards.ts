@@ -1,4 +1,4 @@
-import type { Card, ResolutionTrack } from '../../../shared/types.js';
+import type { Card } from '../../../shared/types.js';
 
 export const SECURITY_OFFICER_DECK: Card[] = [
   {
@@ -16,6 +16,9 @@ export const SECURITY_OFFICER_DECK: Card[] = [
     tone: 'Scientific',
     nature: 'Technological',
     description: 'Advance one Hostile objective twice.',
+    effects: [
+      { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Hostile', amount: 2 }
+    ]
   },
   ...Array.from({ length: 18 }, (_, i) => ({
     id: `so-p-${i}`,
@@ -36,6 +39,9 @@ export const XENOBIOLOGIST_DECK: Card[] = [
     nature: 'Cultural',
     description: 'Choose one Diplomacy Objective. Advance it three times. Discard Peace Offering.',
     uses: 1,
+    effects: [
+      { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Diplomatic', amount: 3 }
+    ]
   },
   {
     id: 'xb-2',
@@ -45,6 +51,9 @@ export const XENOBIOLOGIST_DECK: Card[] = [
     nature: 'Technological',
     description: 'Advance one Scientific objective.',
     uses: 3,
+    effects: [
+      { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Scientific', amount: 1 }
+    ]
   },
   ...Array.from({ length: 18 }, (_, i) => ({
     id: `xb-p-${i}`,
@@ -65,8 +74,8 @@ export const ROYAL_KOOG_DECK: Card[] = [
     nature: 'Cultural',
     description: 'Resolves when it reaches 3 points in either direction.',
     resolutionTracks: [
-      { tone: 'Hostile', current: 0, target: 3, resultName: 'Criminal Probation' },
-      { tone: 'Diplomatic', current: 0, target: 3, resultName: 'Royal Escort' },
+      { tone: 'Hostile', current: 0, target: 3, resultName: 'Criminal Probation', resultTags: ['Criminal'] },
+      { tone: 'Diplomatic', current: 0, target: 3, resultName: 'Royal Escort', resultTags: ['Royal'] },
     ],
   },
   {
@@ -77,8 +86,22 @@ export const ROYAL_KOOG_DECK: Card[] = [
     nature: 'Cultural',
     description: 'Core objective. Requires 3 Royal resolutions to win.',
     resolutionTracks: [
-      { tone: 'Diplomatic', current: 0, target: 5, resultName: 'Royal Alliance' },
+      { tone: 'Diplomatic', current: 0, target: 5, resultName: 'Royal Alliance', resultTags: ['Royal'] },
     ],
+  },
+  {
+    id: 'rk-obj-3',
+    name: 'Strange Foliage',
+    type: 'Objective',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: 'These plants seem to be following your moves. Advance one Hostile at the end of each turn.',
+    resolutionTracks: [
+        { tone: 'Scientific', current: 0, target: 3, resultName: 'Botanical Breakthrough', resultTags: ['Scientific'] }
+    ],
+    effects: [
+        { type: 'ADVANCE', trigger: 'PLANET_TURN', tone: 'Hostile', amount: 1 }
+    ]
   },
   {
     id: 'rk-event-1',
@@ -88,7 +111,7 @@ export const ROYAL_KOOG_DECK: Card[] = [
     nature: 'Biological',
     description: 'A placid, plant eating beast wanders into the area.',
   },
-  ...Array.from({ length: 7 }, (_, i) => {
+  ...Array.from({ length: 6 }, (_, i) => {
     const card: Card = {
       id: `rk-p-${i}`,
       name: `Planet Card ${i + 4}`,
@@ -98,7 +121,7 @@ export const ROYAL_KOOG_DECK: Card[] = [
       description: 'Thematic Royal Koog placeholder.',
     };
     if (i % 2 === 0) {
-      card.resolutionTracks = [{ tone: 'Mercantile' as const, current: 0, target: 3, resultName: 'Trade Agreement' }];
+      card.resolutionTracks = [{ tone: 'Mercantile' as const, current: 0, target: 3, resultName: 'Trade Agreement', resultTags: ['Mercantile'] }];
     }
     return card;
   }),
