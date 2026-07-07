@@ -8,6 +8,21 @@ export interface ResolutionTrack {
   current: number;
   target: number;
   resultName: string;
+  resultTags?: string[];
+}
+
+export interface Effect {
+  type: 'ADVANCE';
+  trigger: 'ON_ACTIVATE' | 'PLANET_TURN';
+  tone?: Tone; // If omitted, use the card's own tone or the action's tone
+  amount: number;
+}
+
+export interface PassiveEffect {
+  type: 'MULTIPLY_ADVANCE';
+  nature?: Nature;
+  tone?: Tone;
+  factor: number;
 }
 
 export interface Card {
@@ -20,6 +35,9 @@ export interface Card {
   uses?: number; // For Equipment
   resolutionTracks?: ResolutionTrack[]; // For Objectives
   resolveAction?: (state: GameState) => GameState; // For Events/Objectives
+  effects?: Effect[];
+  passiveEffects?: PassiveEffect[];
+  tags?: string[];
 }
 
 export type Phase = 'DRAW' | 'PLAYER_ACTION' | 'RESOLUTION' | 'PLANET_TURN';
@@ -55,4 +73,9 @@ export interface GameState {
   victory: boolean;
   defeat: boolean;
   resolutionLog: string[];
+  scenarioCounters: Record<string, number>;
+  activeEnding?: {
+    title: string;
+    isVictory: boolean;
+  };
 }

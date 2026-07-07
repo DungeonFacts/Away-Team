@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGame } from './hooks/useGame.ts';
 import PlanetBoard from './components/PlanetBoard.tsx';
 import PlayerArea from './components/PlayerArea.tsx';
-import { History, MessageSquare, RefreshCw, Users } from 'lucide-react';
+import { History, MessageSquare, RefreshCw, Users, ShieldAlert, Trophy } from 'lucide-react';
 
 const PLAYER_NAMES = ['Security Officer', 'Xenobiologist'];
 
@@ -66,38 +66,73 @@ function App() {
                 <button
                     key={p.id}
                     onClick={() => setCurrentPlayerIndex(i)}
-                    className={`px-6 py-3 rounded-xl font-bold uppercase tracking-wider transition-all ${
+                    className={`px-6 py-3 rounded-xl font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
                         currentPlayerIndex === i
                         ? 'bg-slate-100 text-slate-900 shadow-xl'
                         : 'bg-slate-800 text-slate-500 hover:bg-slate-700'
                     }`}
                 >
-                    View {p.name} {p.lockedIn && '✓'}
+                    {p.name} {p.lockedIn && <span className="text-green-500">✓</span>}
                 </button>
             ))}
           </div>
 
-          <PlayerArea
-            player={currentPlayer}
-            isCurrentPlayer={true}
-            onAction={performAction}
-            onRemoveAction={(idx) => removeAction(currentPlayer.id, idx)}
-            onLockIn={() => lockIn(currentPlayer.id)}
-            selectedObjectiveId={selectedObjectiveId}
-          />
+          <div className="space-y-6">
+              {/* Show current player area with full info */}
+              <PlayerArea
+                player={currentPlayer}
+                isMe={true}
+                onAction={performAction}
+                onRemoveAction={(idx) => removeAction(currentPlayer.id, idx)}
+                onLockIn={() => lockIn(currentPlayer.id)}
+                selectedObjectiveId={selectedObjectiveId}
+              />
+
+              {/* Show other players' deployed areas */}
+              <div className="grid grid-cols-1 gap-6">
+                  {gameState.players.filter((_, i) => i !== currentPlayerIndex).map(otherPlayer => (
+                      <PlayerArea
+                        key={otherPlayer.id}
+                        player={otherPlayer}
+                        isMe={false}
+                        onAction={() => {}}
+                        onRemoveAction={() => {}}
+                        onLockIn={() => {}}
+                      />
+                  ))}
+              </div>
+          </div>
         </div>
 
         <div className="xl:col-span-4 space-y-8">
-          {(gameState.victory || gameState.defeat) && (
-            <div className={`p-6 rounded-xl border-2 text-center animate-bounce ${
-              gameState.victory ? 'bg-green-500/20 border-green-500 text-green-500' : 'bg-red-500/20 border-red-500 text-red-500'
+          {(gameState.activeEnding) && (
+            <div className={`p-6 rounded-xl border-2 text-center animate-bounce flex flex-col items-center gap-2 ${
+              gameState.activeEnding.isVictory ? 'bg-green-500/20 border-green-500 text-green-500' : 'bg-red-500/20 border-red-500 text-red-500'
             }`}>
-              <h2 className="text-3xl font-black mb-2">{gameState.victory ? 'MISSION SUCCESS' : 'MISSION FAILED'}</h2>
-              <button onClick={() => resetGame(PLAYER_NAMES)} className="mt-4 px-4 py-2 bg-slate-900 rounded-lg text-sm font-bold">
-                Deploy Again
+              {gameState.activeEnding.isVictory ? <Trophy size={48} /> : <ShieldAlert size={48} />}
+              <h2 className="text-2xl font-black mb-1 uppercase leading-tight">{gameState.activeEnding.title}</h2>
+              <button onClick={() => resetGame(PLAYER_NAMES)} className="mt-4 px-6 py-2 bg-slate-900 rounded-lg text-sm font-bold border border-slate-700 hover:bg-slate-800 transition-colors">
+                New Mission
               </button>
             </div>
           )}
+
+          <div className="bg-slate-900 rounded-xl border border-slate-800 p-6 flex flex-col gap-4">
+              <h3 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                 Scenario Counters
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                  {Object.entries(gameState.scenarioCounters).map(([tag, count]) => (
+                      <div key={tag} className="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                          <div className="text-[10px] text-slate-500 uppercase font-bold">{tag}</div>
+                          <div className="text-2xl font-black">{count}</div>
+                      </div>
+                  ))}
+                  {Object.keys(gameState.scenarioCounters).length === 0 && (
+                      <p className="col-span-2 text-xs text-slate-600 italic text-center">No counters yet.</p>
+                  )}
+              </div>
+          </div>
 
           <div className="bg-slate-900 rounded-xl border border-slate-800 p-6 h-[400px] flex flex-col">
             <h3 className="text-xs font-bold text-slate-500 uppercase mb-4 flex items-center gap-2">

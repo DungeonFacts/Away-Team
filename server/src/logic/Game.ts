@@ -1,4 +1,4 @@
-import type { GameState, Player, Card, Action, Phase, ResolutionTrack } from '../../../shared/types.js';
+import type { GameState, Player, Card, Action, Phase, ResolutionTrack, Effect } from '../../../shared/types.js';
 import { SECURITY_OFFICER_DECK, XENOBIOLOGIST_DECK, ROYAL_KOOG_DECK } from '../data/cards.js';
 
 export class Game {
@@ -45,6 +45,7 @@ export class Game {
       victory: false,
       defeat: false,
       resolutionLog: [],
+      scenarioCounters: {},
     };
   }
 
@@ -147,17 +148,15 @@ export class Game {
   private applyCardEffect(player: Player, card: Card, targetId?: string) {
     this.state.resolutionLog.push(`${player.name} activated ${card.name}.`);
 
-    const targetObjective = this.state.planetObjectives.find(o => o.id === targetId);
-    if (targetObjective && targetObjective.resolutionTracks) {
-      const track = targetObjective.resolutionTracks.find(t => t.tone === card.tone);
-      if (track) {
-        track.current++;
-        this.state.resolutionLog.push(`Advanced ${track.tone} track on ${targetObjective.name}.`);
-        if (card.name === 'Tactical Analysis') {
-            track.current++;
-            this.state.resolutionLog.push(`(Tactical Analysis) Advanced ${track.tone} track again.`);
+    if (card.effects && card.effects.length > 0) {
+      card.effects.forEach(effect => {
+        if (effect.trigger === 'ON_ACTIVATE') {
+          this.processEffect(effect, player, card, targetId);
         }
-      }
+      });
+    } else {
+      // Default behavior: advance track matching card's tone
+      this.processEffect({ type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: card.tone, amount: 1 }, player, card, targetId);
     }
 
     if (card.type === 'Equipment' && card.uses !== undefined) {
@@ -167,58 +166,101 @@ export class Game {
         this.state.resolutionLog.push(`${card.name} was discarded (no uses left).`);
       }
     }
+  }
 
-    if (card.name === 'Peace Offering') {
-        if (targetObjective && targetObjective.resolutionTracks) {
-             const dipTrack = targetObjective.resolutionTracks.find(t => t.tone === 'Diplomatic');
-             if (dipTrack) {
-                 dipTrack.current += 2;
-                 this.state.resolutionLog.push(`(Peace Offering) Advanced Diplomatic track by 2 more.`);
-             }
+  private processEffect(effect: Effect, player: Player | null, sourceCard: Card, targetId?: string) {
+    if (effect.type === 'ADVANCE') {
+      const targetObjective = this.state.planetObjectives.find(o => o.id === targetId);
+      if (targetObjective && targetObjective.resolutionTracks) {
+        const toneToAdvance = effect.tone || sourceCard.tone;
+        const track = targetObjective.resolutionTracks.find(t => t.tone === toneToAdvance);
+        if (track) {
+          let amount = effect.amount;
+
+          // Apply passive effects from all players
+          this.state.players.forEach(p => {
+              [...(p.policy ? [p.policy] : []), ...p.deployed].forEach(c => {
+                  c.passiveEffects?.forEach(pe => {
+                      if (pe.type === 'MULTIPLY_ADVANCE') {
+                          if ((!pe.nature || pe.nature === sourceCard.nature) && (!pe.tone || pe.tone === sourceCard.tone)) {
+                              amount *= pe.factor;
+                          }
+                      }
+                  });
+              });
+          });
+
+          track.current += amount;
+          const playerName = player ? player.name : 'Planet';
+          this.state.resolutionLog.push(`${playerName} advanced ${track.tone} track on ${targetObjective.name} by ${amount}.`);
         }
+      }
     }
   }
 
   private resolvePlanetTurn() {
     this.state.resolutionLog.push(`Planet resolves events...`);
-    this.state.planetObjectives.forEach(obj => {
-        if (obj.name === 'Strange Foliage') {
-            const track = obj.resolutionTracks?.find(t => t.tone === 'Hostile');
-            if (track) {
-                track.current++;
-                this.state.resolutionLog.push(`Strange Foliage advances Hostile track.`);
-            }
-        }
-    });
 
-    this.state.planetObjectives.forEach((obj, index) => {
-        if (obj.resolutionTracks) {
-            for (const track of obj.resolutionTracks) {
-                if (track.current >= track.target) {
-                    this.state.resolutionLog.push(`${obj.name} resolved as ${track.resultName}!`);
-                    this.state.history.push(`Resolved: ${track.resultName}`);
-                    this.state.planetObjectives.splice(index, 1);
-                    const newCard = this.state.planetDeck.pop();
-                    if (newCard) {
-                        if (newCard.type === 'Objective') this.state.planetObjectives.push(newCard);
-                        else this.state.planetEvents.push(newCard);
+    this.state.planetObjectives.forEach(obj => {
+        obj.effects?.forEach(effect => {
+            if (effect.trigger === 'PLANET_TURN') {
+                // For planet effects, we might need to find a target.
+                // Simple logic: if it's an ADVANCE effect, it might target another objective or itself.
+                // The issue description said "Advance a Hostile objective one step".
+                // For now, let's assume it targets the first valid objective it finds if no target is specified,
+                // or itself if it has the track.
+                const track = obj.resolutionTracks?.find(t => t.tone === effect.tone);
+                if (track) {
+                    this.processEffect(effect, null, obj, obj.id);
+                } else {
+                    // Try to find another objective with the matching tone
+                    const otherObj = this.state.planetObjectives.find(o => o.resolutionTracks?.some(t => t.tone === effect.tone));
+                    if (otherObj) {
+                        this.processEffect(effect, null, obj, otherObj.id);
                     }
-                    break;
                 }
             }
-        }
+        });
     });
+
+    for (let i = 0; i < this.state.planetObjectives.length; i++) {
+        const obj = this.state.planetObjectives[i]!;
+        if (obj.resolutionTracks) {
+            const resolvedTrack = obj.resolutionTracks.find(t => t.current >= t.target);
+            if (resolvedTrack) {
+                this.state.resolutionLog.push(`${obj.name} resolved as ${resolvedTrack.resultName}!`);
+                this.state.history.push(`Resolved: ${resolvedTrack.resultName}`);
+
+                // Update scenario counters
+                if (resolvedTrack.resultTags) {
+                    resolvedTrack.resultTags.forEach(tag => {
+                        this.state.scenarioCounters[tag] = (this.state.scenarioCounters[tag] || 0) + 1;
+                    });
+                }
+
+                this.state.planetObjectives.splice(i, 1);
+                const newCard = this.state.planetDeck.pop();
+                if (newCard) {
+                    if (newCard.type === 'Objective') this.state.planetObjectives.push(newCard);
+                    else this.state.planetEvents.push(newCard);
+                }
+                i--; // Adjust index due to splice
+            }
+        }
+    }
   }
 
   private checkEndConditions() {
-    const royalResolutions = this.state.history.filter(h => h.includes('Royal')).length;
-    const criminalResolutions = this.state.history.filter(h => h.includes('Criminal')).length;
+    const royalResolutions = this.state.scenarioCounters['Royal'] || 0;
+    const criminalResolutions = this.state.scenarioCounters['Criminal'] || 0;
 
     if (royalResolutions >= 3) {
       this.state.victory = true;
+      this.state.activeEnding = { title: 'Royal Alliance: The mission was a success.', isVictory: true };
       this.state.history.push('VICTORY: The mission was a success.');
     } else if (criminalResolutions >= 3) {
       this.state.defeat = true;
+      this.state.activeEnding = { title: 'Criminal Overrun: The mission failed.', isVictory: false };
       this.state.history.push('DEFEAT: The mission failed.');
     }
   }
