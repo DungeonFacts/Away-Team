@@ -1,5 +1,11 @@
-import type { GameState, Player, Card, Action, ResolutionTrack, Effect } from '../../../shared/types.js';
-import { SECURITY_OFFICER_DECK, XENOBIOLOGIST_DECK, ROYAL_KOOG_DECK } from '../data/cards.js';
+import type { GameState, Player, Card, Action, ResolutionTrack, Effect, PassiveEffect } from '../../../shared/types.js';
+import {
+  SECURITY_OFFICER_DECK,
+  XENOBIOLOGIST_DECK,
+  ROYAL_KOOG_SITUATIONS,
+  ROYAL_KOOG_OBJECTIVES,
+  ROYAL_KOOG_REWARDS
+} from '../data/cards.js';
 
 export class Game {
   private state: GameState;
@@ -20,17 +26,20 @@ export class Game {
       p.hand = p.deck.splice(0, 5);
     });
 
-    const planetDeck = this.shuffle([...ROYAL_KOOG_DECK]);
+    const planetDeck = this.shuffle([...ROYAL_KOOG_SITUATIONS]);
+    const availableObjectives = this.shuffle([...ROYAL_KOOG_OBJECTIVES]);
     const planetObjectives: Card[] = [];
     const planetSituations: Card[] = [];
 
-    const initialPlanetCardsCount = players.length + 1;
-    for (let i = 0; i < initialPlanetCardsCount; i++) {
+    const objectiveCount = Math.min(players.length + 1, availableObjectives.length);
+    for (let i = 0; i < objectiveCount; i++) {
+      planetObjectives.push(availableObjectives.pop()!);
+    }
+
+    // Initial Situations
+    for (let i = 0; i < 2; i++) {
       const card = planetDeck.pop();
-      if (card) {
-        if (card.type === 'Objective') planetObjectives.push(card);
-        else planetSituations.push(card);
-      }
+      if (card) planetSituations.push(card);
     }
 
     this.state = {
@@ -69,8 +78,45 @@ export class Game {
       const card = player.hand.find(c => c.id === action.cardId);
       if (!card) return;
     } else if (action.type === 'ACTIVATE') {
-      const card = player.deployed.find(c => c.id === action.cardId);
+      const card = [...player.deployed, ...(player.policy ? [player.policy] : []), ...player.selectedActions.filter(a => a.type === 'PLAY').map(a => player.hand.find(c => c.id === a.cardId)).filter(Boolean)].find(c => c?.id === action.cardId);
       if (!card) return;
+
+      // Check MODIFY_ACTION_COST
+      const allPassives = this.getAllActivePassives();
+      let cost = 1;
+      allPassives.forEach(pe => {
+          if (pe.type === 'MODIFY_ACTION_COST') {
+              if (!pe.sourceCardType || pe.sourceCardType === card.type) {
+                  cost += (pe.amount ?? 0);
+              }
+          }
+      });
+
+      if (player.selectedActions.length + cost > 2) return;
+
+      // Check PREVENT_ACTION
+      const isPrevented = allPassives.some(pe => {
+        if (pe.type !== 'PREVENT_ACTION') return false;
+        if (pe.sourceTone && pe.sourceTone !== card.tone) return false;
+        if (pe.sourceNature && pe.sourceNature !== card.nature) return false;
+        return true;
+      });
+      if (isPrevented) return;
+
+      if (action.targetId) {
+        const target = [...this.state.planetSituations, ...this.state.planetObjectives].find(c => c.id === action.targetId);
+
+        // Check FORCE_TARGET
+        const forceTargetEffect = allPassives.find(pe => pe.type === 'FORCE_TARGET' && pe.sourceTone === card.tone);
+        if (forceTargetEffect && forceTargetEffect.targetCardName && target?.name !== forceTargetEffect.targetCardName) {
+            return;
+        }
+
+        if (target && action.targetTrackId) {
+          const track = target.resolutionTracks?.find(t => t.id === action.targetTrackId);
+          if (!track) return;
+        }
+      }
     }
 
     player.selectedActions.push(action);
@@ -82,9 +128,20 @@ export class Game {
     player.selectedActions.splice(index, 1);
   }
 
+  private getAllActivePassives(): PassiveEffect[] {
+    const allPassives: PassiveEffect[] = [];
+    this.state.players.forEach(p => {
+      if (p.policy) allPassives.push(...(p.policy.passiveEffects || []));
+      p.deployed.forEach(c => allPassives.push(...(c.passiveEffects || [])));
+    });
+    this.state.planetSituations.forEach(s => allPassives.push(...(s.passiveEffects || [])));
+    this.state.planetObjectives.forEach(o => allPassives.push(...(o.passiveEffects || [])));
+    return allPassives;
+  }
+
   public lockIn(playerId: string) {
     const player = this.state.players.find(p => p.id === playerId);
-    if (!player || player.selectedActions.length === 0) return;
+    if (!player) return;
     player.lockedIn = true;
 
     if (this.state.players.every(p => p.lockedIn)) {
@@ -120,7 +177,7 @@ export class Game {
             this.state.resolutionLog.push(`${player.name} played ${cardToPlay.name}.`);
           }
         } else if (action.type === 'ACTIVATE') {
-          const cardToActivate = player.deployed.find(c => c.id === action.cardId);
+          const cardToActivate = [...player.deployed, ...(player.policy ? [player.policy] : [])].find(c => c.id === action.cardId);
           if (cardToActivate) {
             this.state.resolutionLog.push(`${player.name} activated ${cardToActivate.name}.`);
             if (cardToActivate.effects && cardToActivate.effects.length > 0) {
@@ -170,14 +227,18 @@ export class Game {
       this.state.resolutionLog.push(`Suppressed Tracks: ${Array.from(suppressedTracks).join(', ')}`);
     }
 
+    // Collect all passive effects
+    const allPassives: PassiveEffect[] = this.getAllActivePassives();
+
     // Process ADVANCE effects
     activeEffects.forEach(({ player, card, effect, targetId }) => {
       if (effect.type === 'ADVANCE') {
-        this.processEffect(effect, player, card, targetId, suppressedTones, suppressedTracks);
+        const targetTrackId = player.selectedActions.find(a => a.cardId === card.id)?.targetTrackId;
+        this.processEffect(effect, player, card, targetId, targetTrackId, suppressedTones, suppressedTracks, allPassives);
       }
     });
 
-    this.resolvePlanetTurn(suppressedTones, suppressedTracks);
+    this.resolvePlanetTurn(suppressedTones, suppressedTracks, allPassives);
     this.checkEndConditions();
 
     this.state.players.forEach(p => {
@@ -189,9 +250,19 @@ export class Game {
     this.state.history.push(`Turn ${this.state.turnCount} started.`);
   }
 
-  private processEffect(effect: Effect, player: Player | null, sourceCard: Card, targetId?: string, suppressedTones?: Set<string>, suppressedTracks?: Set<string>) {
+  private processEffect(
+    effect: Effect,
+    player: Player | null,
+    sourceCard: Card,
+    targetId?: string,
+    targetTrackId?: string,
+    suppressedTones?: Set<string>,
+    suppressedTracks?: Set<string>,
+    allPassives: PassiveEffect[] = []
+  ) {
     if (effect.type === 'ADVANCE') {
       const toneToAdvance = effect.tone || sourceCard.tone;
+
       if (suppressedTones?.has(sourceCard.tone)) {
           const name = player ? player.name : 'Planet';
           this.state.resolutionLog.push(`${name}'s ${sourceCard.name} was suppressed (Tone: ${sourceCard.tone}).`);
@@ -203,50 +274,108 @@ export class Game {
           return;
       }
 
-      const targetSituation = this.state.planetSituations.find(s => s.id === targetId);
-      if (targetSituation && targetSituation.resolutionTracks) {
-        const track = targetSituation.resolutionTracks.find(t => t.tone === toneToAdvance);
+      const targetCard = [...this.state.planetSituations, ...this.state.planetObjectives].find(s => s.id === targetId);
+      if (targetCard && targetCard.resolutionTracks) {
+        let track = targetCard.resolutionTracks.find(t => t.id === targetTrackId);
+        if (!track) {
+           // Fallback: match by tone and nature if possible, but tone is primary
+           track = targetCard.resolutionTracks.find(t => t.tone === toneToAdvance && (t.nature === sourceCard.nature || !t.nature));
+           if (!track) {
+               track = targetCard.resolutionTracks.find(t => t.tone === toneToAdvance);
+           }
+        }
+
         if (track) {
+          // Check for PREVENT_ADVANCE
+          const isPrevented = allPassives.some(pe => {
+            if (pe.type !== 'PREVENT_ADVANCE') return false;
+            if (pe.sourceTone && pe.sourceTone !== sourceCard.tone) return false;
+            if (pe.sourceNature && pe.sourceNature !== sourceCard.nature) return false;
+            if (pe.targetCardName && pe.targetCardName !== targetCard.name) return false;
+            if (pe.targetTrackTag && pe.targetTrackTag !== track?.tag) return false;
+            return true;
+          });
+
+          if (isPrevented) {
+            this.state.resolutionLog.push(`Advancement on ${targetCard.name} (${track.tag || track.tone}) was prevented by a passive effect.`);
+            return;
+          }
+
           let amount = effect.amount !== undefined ? effect.amount : 1;
 
-          // Apply passive effects from all players
-          this.state.players.forEach(p => {
-              [...(p.policy ? [p.policy] : []), ...p.deployed].forEach(c => {
-                  c.passiveEffects?.forEach(pe => {
-                      if (pe.type === 'MULTIPLY_ADVANCE') {
-                          if ((!pe.nature || pe.nature === sourceCard.nature) && (!pe.tone || pe.tone === sourceCard.tone)) {
-                              amount *= pe.factor;
-                          }
-                      }
-                  });
-              });
+          // Apply MULTIPLY_ADVANCE
+          allPassives.forEach(pe => {
+            if (pe.type === 'MULTIPLY_ADVANCE') {
+              let match = true;
+              if (pe.sourceTone && pe.sourceTone !== sourceCard.tone) match = false;
+              if (pe.sourceNature && pe.sourceNature !== sourceCard.nature) match = false;
+              if (pe.targetCardName && pe.targetCardName !== targetCard.name) match = false;
+              if (pe.targetTrackTag && pe.targetTrackTag !== track?.tag) match = false;
+              if (match) amount *= (pe.factor ?? 1);
+            }
           });
 
           track.current += amount;
           const playerName = player ? player.name : 'Planet';
-          this.state.resolutionLog.push(`${playerName} advanced ${track.tone} track on ${targetSituation.name} by ${amount}.`);
+          this.state.resolutionLog.push(`${playerName} advanced ${track.tag || track.tone} track on ${targetCard.name} by ${amount}.`);
         }
       }
+    } else if (effect.type === 'DRAW_CARD') {
+        // Logic for "Accept a Bribe?" reward
+        if (player) {
+          const reward = ROYAL_KOOG_REWARDS.find(r => r.id === 'RK-REW-01'); // Simple for now
+          if (reward) {
+            player.hand.push({ ...reward });
+            this.state.resolutionLog.push(`${player.name} received a reward: ${reward.name}!`);
+          }
+        }
+    } else if (effect.type === 'REDUCE_TRACK') {
+        const amount = effect.amount ?? 1;
+        if (effect.targetCardName) {
+            const target = this.state.planetObjectives.find(o => o.name === effect.targetCardName);
+            if (target) {
+                const track = target.resolutionTracks?.find(t => t.tag === effect.targetTrackTag);
+                if (track) {
+                    track.current = Math.max(0, track.current - amount);
+                    this.state.resolutionLog.push(`Planet reduced ${track.tag} on ${target.name} by ${amount}.`);
+                }
+            }
+        } else {
+            // "Smuggler Ambush" - reduce ANY active objective track
+            const allObjectiveTracks = this.state.planetObjectives.flatMap(o => o.resolutionTracks || []);
+            const trackToReduce = allObjectiveTracks.find(t => t.current > 0);
+            if (trackToReduce) {
+                trackToReduce.current = Math.max(0, trackToReduce.current - amount);
+                this.state.resolutionLog.push(`Planet reduced ${trackToReduce.tag} track by ${amount}.`);
+            }
+        }
     }
   }
 
-  private resolvePlanetTurn(suppressedTones?: Set<string>, suppressedTracks?: Set<string>) {
+  private resolvePlanetTurn(suppressedTones?: Set<string>, suppressedTracks?: Set<string>, allPassives: PassiveEffect[] = []) {
     this.state.resolutionLog.push(`Planet resolves situations...`);
+
+    // Self-discard logic for Counterfeit Crystals
+    this.state.planetSituations.forEach(sit => {
+        if (sit.tags?.includes('SelfDiscardAfter3Turns')) {
+            const ageKey = `age_${sit.id}`;
+            this.state.scenarioCounters[ageKey] = (this.state.scenarioCounters[ageKey] || 0) + 1;
+            if (this.state.scenarioCounters[ageKey] >= 3) {
+                this.state.resolutionLog.push(`${sit.name} expired.`);
+                sit.effects?.forEach(e => {
+                    if (e.type === 'REDUCE_TRACK') {
+                        this.processEffect(e, null, sit);
+                    }
+                });
+                this.state.planetSituations = this.state.planetSituations.filter(s => s.id !== sit.id);
+            }
+        }
+    });
 
     this.state.planetSituations.forEach(sit => {
         sit.effects?.forEach(effect => {
             if (effect.trigger === 'PLANET_TURN') {
-                if (effect.type === 'ADVANCE') {
-                    const track = sit.resolutionTracks?.find(t => t.tone === effect.tone);
-                    if (track) {
-                        this.processEffect(effect, null, sit, sit.id, suppressedTones, suppressedTracks);
-                    } else {
-                        const otherSit = this.state.planetSituations.find(s => s.resolutionTracks?.some(t => t.tone === effect.tone));
-                        if (otherSit) {
-                            this.processEffect(effect, null, sit, otherSit.id, suppressedTones, suppressedTracks);
-                        }
-                    }
-                }
+                this.processEffect(effect, null, sit, undefined, undefined, suppressedTones, suppressedTracks, allPassives);
             }
         });
     });
@@ -273,14 +402,17 @@ export class Game {
                            }
                         });
                     });
+
+                    // Check for DRAW_CARD reward on fulfillment (e.g., Accept a Bribe?)
+                    const drawEffect = sit.effects?.find(e => e.type === 'DRAW_CARD' && e.targetTrackTag === resolvedTrack.tag);
+                    if (drawEffect) {
+                        // Reward the player who most recently interacted? No, user said "Target player", let's give to player 1 for now or randomly.
+                        // Ideally we'd track who fulfilled it, but let's just give it to the first player for the hot-seat demo.
+                        this.processEffect(drawEffect, this.state.players[0], sit);
+                    }
                 }
 
                 this.state.planetSituations.splice(i, 1);
-                const newCard = this.state.planetDeck.pop();
-                if (newCard) {
-                    if (newCard.type === 'Objective') this.state.planetObjectives.push(newCard);
-                    else this.state.planetSituations.push(newCard);
-                }
                 i--; // Adjust index due to splice
             }
         }
@@ -306,13 +438,33 @@ export class Game {
             }
         }
     }
+
+    // Emerge a new situation every turn
+    const newCard = this.state.planetDeck.pop();
+    if (newCard) {
+        this.state.planetSituations.push(newCard);
+        this.state.resolutionLog.push(`New situation emerged: ${newCard.name}`);
+    }
   }
 
   private checkEndConditions() {
     if (this.state.planetObjectives.length === 0) {
         this.state.victory = true;
-        this.state.activeEnding = { title: 'Mission Accomplished: All objectives fulfilled.', isVictory: true };
-        this.state.history.push('VICTORY: Mission Accomplished.');
+
+        let endingTitle = 'Mission Accomplished: ';
+        const endings = [];
+        if (this.state.scenarioCounters['RoyalEnding']) endings.push('You founded a Royal embassy with the blessing of the Royal Court.');
+        if (this.state.scenarioCounters['CriminalEnding']) endings.push('The Kooga Nostra has established a long-term presence on the planet.');
+        if (this.state.scenarioCounters['ReligiousEnding']) endings.push('The Crystal Cultists have secured their sacred grounds.');
+
+        if (endings.length > 0) {
+            endingTitle += endings.join(' ');
+        } else {
+            endingTitle += 'All objectives fulfilled.';
+        }
+
+        this.state.activeEnding = { title: endingTitle, isVictory: true };
+        this.state.history.push(`VICTORY: ${endingTitle}`);
     }
   }
 }

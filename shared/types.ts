@@ -1,10 +1,12 @@
 export type Tone = 'Hostile' | 'Political' | 'Mercantile' | 'Scientific';
 export type Nature = 'Biological' | 'Technological' | 'Cultural' | 'Anomalous';
 
-export type CardType = 'Equipment' | 'Tactic' | 'Policy' | 'Objective' | 'Situation';
+export type CardType = 'Equipment' | 'Tactic' | 'Policy' | 'Objective' | 'Situation' | 'Reward';
 
 export interface ResolutionTrack {
+  id: string;
   tone?: Tone;
+  nature?: Nature;
   tag?: string;
   current: number;
   target: number;
@@ -13,18 +15,29 @@ export interface ResolutionTrack {
 }
 
 export interface Effect {
-  type: 'ADVANCE' | 'SUPPRESS_TONE' | 'SUPPRESS_TRACK';
+  type: 'ADVANCE' | 'SUPPRESS_TONE' | 'SUPPRESS_TRACK' | 'DRAW_CARD' | 'REDUCE_TRACK';
   trigger: 'ON_ACTIVATE' | 'PLANET_TURN';
-  tone?: Tone; // For ADVANCE or SUPPRESS_TONE
-  amount?: number; // For ADVANCE
-  trackTone?: Tone; // For SUPPRESS_TRACK
+  tone?: Tone;
+  nature?: Nature;
+  amount?: number;
+  trackTone?: Tone;
+  targetTrackTag?: string;
+  targetCardName?: string;
 }
 
 export interface PassiveEffect {
-  type: 'MULTIPLY_ADVANCE';
-  nature?: Nature;
-  tone?: Tone;
-  factor: number;
+  type: 'MULTIPLY_ADVANCE' | 'PREVENT_ADVANCE' | 'FORCE_TARGET' | 'MODIFY_ACTION_COST' | 'PREVENT_ACTION';
+  factor?: number;
+  amount?: number;
+
+  // Filters
+  sourceTone?: Tone;
+  sourceNature?: Nature;
+  sourceCardType?: CardType;
+  targetCardName?: string;
+  targetTrackTag?: string;
+  targetTrackTone?: Tone;
+  targetNature?: Nature;
 }
 
 export interface Card {
@@ -35,8 +48,7 @@ export interface Card {
   nature: Nature;
   description: string;
   uses?: number; // For Equipment
-  resolutionTracks?: ResolutionTrack[]; // For Objectives
-  resolveAction?: (state: GameState) => GameState; // For Events/Objectives
+  resolutionTracks?: ResolutionTrack[]; // For Objectives/Situations
   effects?: Effect[];
   passiveEffects?: PassiveEffect[];
   tags?: string[];
@@ -49,6 +61,7 @@ export interface Action {
   playerId: string;
   cardId?: string;
   targetId?: string;
+  targetTrackId?: string;
 }
 
 export interface Player {
