@@ -56,7 +56,7 @@ function App() {
         <div className="xl:col-span-8 space-y-8">
           <PlanetBoard
             objectives={gameState.planetObjectives}
-            events={gameState.planetEvents}
+            situations={gameState.planetSituations}
             onSelectObjective={setSelectedObjectiveId}
             selectedObjectiveId={selectedObjectiveId}
           />

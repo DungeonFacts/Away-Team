@@ -1,4 +1,4 @@
-import type { GameState, Player, Card, Action, Phase, ResolutionTrack, Effect } from '../../../shared/types.js';
+import type { GameState, Player, Card, Action, ResolutionTrack, Effect } from '../../../shared/types.js';
 import { SECURITY_OFFICER_DECK, XENOBIOLOGIST_DECK, ROYAL_KOOG_DECK } from '../data/cards.js';
 
 export class Game {
@@ -22,14 +22,14 @@ export class Game {
 
     const planetDeck = this.shuffle([...ROYAL_KOOG_DECK]);
     const planetObjectives: Card[] = [];
-    const planetEvents: Card[] = [];
+    const planetSituations: Card[] = [];
 
     const initialPlanetCardsCount = players.length + 1;
     for (let i = 0; i < initialPlanetCardsCount; i++) {
       const card = planetDeck.pop();
       if (card) {
         if (card.type === 'Objective') planetObjectives.push(card);
-        else planetEvents.push(card);
+        else planetSituations.push(card);
       }
     }
 
@@ -38,7 +38,7 @@ export class Game {
       players,
       planetDeck,
       planetObjectives,
-      planetEvents,
+      planetSituations,
       phase: 'PLAYER_ACTION',
       turnCount: 1,
       history: ['Game started.'],
@@ -96,13 +96,88 @@ export class Game {
     this.state.phase = 'RESOLUTION';
     this.state.resolutionLog = [];
 
+    // Simultaneous Resolution
+    const activeEffects: { player: Player; card: Card; effect: Effect; targetId?: string }[] = [];
+
     for (const player of this.state.players) {
       for (const action of player.selectedActions) {
-        this.processAction(player, action);
+        if (action.type === 'DRAW') {
+          const card = player.deck.pop();
+          if (card) {
+            player.hand.push(card);
+            this.state.resolutionLog.push(`${player.name} drew a card.`);
+          }
+        } else if (action.type === 'PLAY') {
+          const cardToPlayIndex = player.hand.findIndex(c => c.id === action.cardId);
+          if (cardToPlayIndex !== -1) {
+            const cardToPlay = player.hand.splice(cardToPlayIndex, 1)[0]!;
+            if (cardToPlay.type === 'Policy') {
+              if (player.policy) player.hand.push(player.policy);
+              player.policy = cardToPlay;
+            } else {
+              player.deployed.push(cardToPlay);
+            }
+            this.state.resolutionLog.push(`${player.name} played ${cardToPlay.name}.`);
+          }
+        } else if (action.type === 'ACTIVATE') {
+          const cardToActivate = player.deployed.find(c => c.id === action.cardId);
+          if (cardToActivate) {
+            this.state.resolutionLog.push(`${player.name} activated ${cardToActivate.name}.`);
+            if (cardToActivate.effects && cardToActivate.effects.length > 0) {
+              cardToActivate.effects.forEach(effect => {
+                if (effect.trigger === 'ON_ACTIVATE') {
+                  activeEffects.push({ player, card: cardToActivate, effect, targetId: action.targetId });
+                }
+              });
+            } else {
+              activeEffects.push({
+                player,
+                card: cardToActivate,
+                effect: { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: cardToActivate.tone, amount: 1 },
+                targetId: action.targetId
+              });
+            }
+
+            if (cardToActivate.type === 'Equipment' && cardToActivate.uses !== undefined) {
+              cardToActivate.uses--;
+              if (cardToActivate.uses <= 0) {
+                player.deployed = player.deployed.filter(c => c.id !== cardToActivate.id);
+                this.state.resolutionLog.push(`${cardToActivate.name} was discarded (no uses left).`);
+              }
+            }
+          }
+        }
       }
     }
 
-    this.resolvePlanetTurn();
+    // Apply Suppression
+    const suppressedTones = new Set<string>();
+    const suppressedTracks = new Set<string>();
+
+    activeEffects.forEach(({ effect }) => {
+      if (effect.type === 'SUPPRESS_TONE' && effect.tone) {
+        suppressedTones.add(effect.tone);
+      }
+      if (effect.type === 'SUPPRESS_TRACK' && effect.trackTone) {
+        suppressedTracks.add(effect.trackTone);
+      }
+    });
+
+    if (suppressedTones.size > 0) {
+      this.state.resolutionLog.push(`Suppressed Tones: ${Array.from(suppressedTones).join(', ')}`);
+    }
+    if (suppressedTracks.size > 0) {
+      this.state.resolutionLog.push(`Suppressed Tracks: ${Array.from(suppressedTracks).join(', ')}`);
+    }
+
+    // Process ADVANCE effects
+    activeEffects.forEach(({ player, card, effect, targetId }) => {
+      if (effect.type === 'ADVANCE') {
+        this.processEffect(effect, player, card, targetId, suppressedTones, suppressedTracks);
+      }
+    });
+
+    this.resolvePlanetTurn(suppressedTones, suppressedTracks);
     this.checkEndConditions();
 
     this.state.players.forEach(p => {
@@ -114,68 +189,25 @@ export class Game {
     this.state.history.push(`Turn ${this.state.turnCount} started.`);
   }
 
-  private processAction(player: Player, action: Action) {
-    switch (action.type) {
-      case 'DRAW':
-        const card = player.deck.pop();
-        if (card) {
-          player.hand.push(card);
-          this.state.resolutionLog.push(`${player.name} drew a card.`);
-        }
-        break;
-      case 'PLAY':
-        const cardToPlayIndex = player.hand.findIndex(c => c.id === action.cardId);
-        if (cardToPlayIndex !== -1) {
-          const cardToPlay = player.hand.splice(cardToPlayIndex, 1)[0]!;
-          if (cardToPlay.type === 'Policy') {
-            if (player.policy) player.hand.push(player.policy);
-            player.policy = cardToPlay;
-          } else {
-            player.deployed.push(cardToPlay);
-          }
-          this.state.resolutionLog.push(`${player.name} played ${cardToPlay.name}.`);
-        }
-        break;
-      case 'ACTIVATE':
-        const cardToActivate = player.deployed.find(c => c.id === action.cardId);
-        if (cardToActivate) {
-          this.applyCardEffect(player, cardToActivate, action.targetId);
-        }
-        break;
-    }
-  }
-
-  private applyCardEffect(player: Player, card: Card, targetId?: string) {
-    this.state.resolutionLog.push(`${player.name} activated ${card.name}.`);
-
-    if (card.effects && card.effects.length > 0) {
-      card.effects.forEach(effect => {
-        if (effect.trigger === 'ON_ACTIVATE') {
-          this.processEffect(effect, player, card, targetId);
-        }
-      });
-    } else {
-      // Default behavior: advance track matching card's tone
-      this.processEffect({ type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: card.tone, amount: 1 }, player, card, targetId);
-    }
-
-    if (card.type === 'Equipment' && card.uses !== undefined) {
-      card.uses--;
-      if (card.uses <= 0) {
-        player.deployed = player.deployed.filter(c => c.id !== card.id);
-        this.state.resolutionLog.push(`${card.name} was discarded (no uses left).`);
-      }
-    }
-  }
-
-  private processEffect(effect: Effect, player: Player | null, sourceCard: Card, targetId?: string) {
+  private processEffect(effect: Effect, player: Player | null, sourceCard: Card, targetId?: string, suppressedTones?: Set<string>, suppressedTracks?: Set<string>) {
     if (effect.type === 'ADVANCE') {
-      const targetObjective = this.state.planetObjectives.find(o => o.id === targetId);
-      if (targetObjective && targetObjective.resolutionTracks) {
-        const toneToAdvance = effect.tone || sourceCard.tone;
-        const track = targetObjective.resolutionTracks.find(t => t.tone === toneToAdvance);
+      const toneToAdvance = effect.tone || sourceCard.tone;
+      if (suppressedTones?.has(sourceCard.tone)) {
+          const name = player ? player.name : 'Planet';
+          this.state.resolutionLog.push(`${name}'s ${sourceCard.name} was suppressed (Tone: ${sourceCard.tone}).`);
+          return;
+      }
+      if (suppressedTracks?.has(toneToAdvance)) {
+          const name = player ? player.name : 'Planet';
+          this.state.resolutionLog.push(`${name}'s ${sourceCard.name} failed to advance ${toneToAdvance} track (Track suppressed).`);
+          return;
+      }
+
+      const targetSituation = this.state.planetSituations.find(s => s.id === targetId);
+      if (targetSituation && targetSituation.resolutionTracks) {
+        const track = targetSituation.resolutionTracks.find(t => t.tone === toneToAdvance);
         if (track) {
-          let amount = effect.amount;
+          let amount = effect.amount !== undefined ? effect.amount : 1;
 
           // Apply passive effects from all players
           this.state.players.forEach(p => {
@@ -192,76 +224,95 @@ export class Game {
 
           track.current += amount;
           const playerName = player ? player.name : 'Planet';
-          this.state.resolutionLog.push(`${playerName} advanced ${track.tone} track on ${targetObjective.name} by ${amount}.`);
+          this.state.resolutionLog.push(`${playerName} advanced ${track.tone} track on ${targetSituation.name} by ${amount}.`);
         }
       }
     }
   }
 
-  private resolvePlanetTurn() {
-    this.state.resolutionLog.push(`Planet resolves events...`);
+  private resolvePlanetTurn(suppressedTones?: Set<string>, suppressedTracks?: Set<string>) {
+    this.state.resolutionLog.push(`Planet resolves situations...`);
 
-    this.state.planetObjectives.forEach(obj => {
-        obj.effects?.forEach(effect => {
+    this.state.planetSituations.forEach(sit => {
+        sit.effects?.forEach(effect => {
             if (effect.trigger === 'PLANET_TURN') {
-                // For planet effects, we might need to find a target.
-                // Simple logic: if it's an ADVANCE effect, it might target another objective or itself.
-                // The issue description said "Advance a Hostile objective one step".
-                // For now, let's assume it targets the first valid objective it finds if no target is specified,
-                // or itself if it has the track.
-                const track = obj.resolutionTracks?.find(t => t.tone === effect.tone);
-                if (track) {
-                    this.processEffect(effect, null, obj, obj.id);
-                } else {
-                    // Try to find another objective with the matching tone
-                    const otherObj = this.state.planetObjectives.find(o => o.resolutionTracks?.some(t => t.tone === effect.tone));
-                    if (otherObj) {
-                        this.processEffect(effect, null, obj, otherObj.id);
+                if (effect.type === 'ADVANCE') {
+                    const track = sit.resolutionTracks?.find(t => t.tone === effect.tone);
+                    if (track) {
+                        this.processEffect(effect, null, sit, sit.id, suppressedTones, suppressedTracks);
+                    } else {
+                        const otherSit = this.state.planetSituations.find(s => s.resolutionTracks?.some(t => t.tone === effect.tone));
+                        if (otherSit) {
+                            this.processEffect(effect, null, sit, otherSit.id, suppressedTones, suppressedTracks);
+                        }
                     }
                 }
             }
         });
     });
 
+    for (let i = 0; i < this.state.planetSituations.length; i++) {
+        const sit = this.state.planetSituations[i]!;
+        if (sit.resolutionTracks) {
+            const resolvedTrack = sit.resolutionTracks.find(t => t.current >= t.target);
+            if (resolvedTrack) {
+                this.state.resolutionLog.push(`${sit.name} resolved as ${resolvedTrack.resultName}!`);
+                this.state.history.push(`Resolved: ${resolvedTrack.resultName}`);
+
+                // Situations advance Objectives
+                if (resolvedTrack.resultTags) {
+                    resolvedTrack.resultTags.forEach(tag => {
+                        this.state.scenarioCounters[tag] = (this.state.scenarioCounters[tag] || 0) + 1;
+
+                        // Find an objective with a matching tag track
+                        this.state.planetObjectives.forEach(obj => {
+                           const objTrack = obj.resolutionTracks?.find(ot => ot.tag === tag);
+                           if (objTrack) {
+                               objTrack.current += 1;
+                               this.state.resolutionLog.push(`Objective ${obj.name} advanced (${tag} track).`);
+                           }
+                        });
+                    });
+                }
+
+                this.state.planetSituations.splice(i, 1);
+                const newCard = this.state.planetDeck.pop();
+                if (newCard) {
+                    if (newCard.type === 'Objective') this.state.planetObjectives.push(newCard);
+                    else this.state.planetSituations.push(newCard);
+                }
+                i--; // Adjust index due to splice
+            }
+        }
+    }
+
+    // Check Objective Resolution
     for (let i = 0; i < this.state.planetObjectives.length; i++) {
         const obj = this.state.planetObjectives[i]!;
         if (obj.resolutionTracks) {
             const resolvedTrack = obj.resolutionTracks.find(t => t.current >= t.target);
             if (resolvedTrack) {
-                this.state.resolutionLog.push(`${obj.name} resolved as ${resolvedTrack.resultName}!`);
-                this.state.history.push(`Resolved: ${resolvedTrack.resultName}`);
+                 this.state.resolutionLog.push(`Objective ${obj.name} fulfilled: ${resolvedTrack.resultName}!`);
+                 this.state.history.push(`Objective Fulfilled: ${resolvedTrack.resultName}`);
 
-                // Update scenario counters
-                if (resolvedTrack.resultTags) {
-                    resolvedTrack.resultTags.forEach(tag => {
-                        this.state.scenarioCounters[tag] = (this.state.scenarioCounters[tag] || 0) + 1;
-                    });
-                }
+                 if (resolvedTrack.resultTags) {
+                     resolvedTrack.resultTags.forEach(tag => {
+                         this.state.scenarioCounters[tag] = (this.state.scenarioCounters[tag] || 0) + 1;
+                     });
+                 }
 
-                this.state.planetObjectives.splice(i, 1);
-                const newCard = this.state.planetDeck.pop();
-                if (newCard) {
-                    if (newCard.type === 'Objective') this.state.planetObjectives.push(newCard);
-                    else this.state.planetEvents.push(newCard);
-                }
-                i--; // Adjust index due to splice
+                 this.state.planetObjectives.splice(i, 1);
+                 i--;
             }
         }
     }
   }
 
   private checkEndConditions() {
-    const royalResolutions = this.state.scenarioCounters['Royal'] || 0;
-    const criminalResolutions = this.state.scenarioCounters['Criminal'] || 0;
-
-    if (royalResolutions >= 3) {
-      this.state.victory = true;
-      this.state.activeEnding = { title: 'Royal Alliance: The mission was a success.', isVictory: true };
-      this.state.history.push('VICTORY: The mission was a success.');
-    } else if (criminalResolutions >= 3) {
-      this.state.defeat = true;
-      this.state.activeEnding = { title: 'Criminal Overrun: The mission failed.', isVictory: false };
-      this.state.history.push('DEFEAT: The mission failed.');
+    if (this.state.planetObjectives.length === 0) {
+        this.state.victory = true;
+        this.state.activeEnding = { title: 'Mission Accomplished: All objectives fulfilled.', isVictory: true };
+        this.state.history.push('VICTORY: Mission Accomplished.');
     }
   }
 }
