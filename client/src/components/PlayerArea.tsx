@@ -15,7 +15,7 @@ const ToneIcon = ({ tone, size = 16 }: { tone: string, size?: number }) => {
   switch (tone) {
     case 'Hostile': return <Shield size={size} className="text-red-500" />;
     case 'Scientific': return <FlaskConical size={size} className="text-green-500" />;
-    case 'Diplomatic': return <Handshake size={size} className="text-blue-500" />;
+    case 'Political': return <Handshake size={size} className="text-blue-500" />;
     case 'Mercantile': return <DollarSign size={size} className="text-yellow-500" />;
     default: return null;
   }

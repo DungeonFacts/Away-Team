@@ -1,10 +1,11 @@
-export type Tone = 'Hostile' | 'Diplomatic' | 'Mercantile' | 'Scientific';
+export type Tone = 'Hostile' | 'Political' | 'Mercantile' | 'Scientific';
 export type Nature = 'Biological' | 'Technological' | 'Cultural' | 'Anomalous';
 
-export type CardType = 'Equipment' | 'Tactic' | 'Policy' | 'Objective' | 'Event';
+export type CardType = 'Equipment' | 'Tactic' | 'Policy' | 'Objective' | 'Situation';
 
 export interface ResolutionTrack {
-  tone: Tone;
+  tone?: Tone;
+  tag?: string;
   current: number;
   target: number;
   resultName: string;
@@ -12,10 +13,11 @@ export interface ResolutionTrack {
 }
 
 export interface Effect {
-  type: 'ADVANCE';
+  type: 'ADVANCE' | 'SUPPRESS_TONE' | 'SUPPRESS_TRACK';
   trigger: 'ON_ACTIVATE' | 'PLANET_TURN';
-  tone?: Tone; // If omitted, use the card's own tone or the action's tone
-  amount: number;
+  tone?: Tone; // For ADVANCE or SUPPRESS_TONE
+  amount?: number; // For ADVANCE
+  trackTone?: Tone; // For SUPPRESS_TRACK
 }
 
 export interface PassiveEffect {
@@ -66,7 +68,7 @@ export interface GameState {
   players: Player[];
   planetDeck: Card[];
   planetObjectives: Card[];
-  planetEvents: Card[];
+  planetSituations: Card[];
   phase: Phase;
   turnCount: number;
   history: string[];
