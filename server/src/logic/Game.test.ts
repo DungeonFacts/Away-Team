@@ -338,4 +338,91 @@ describe('Away Team Game Engine Tests', () => {
     // Anomalous track t1 should advance by 1 at the end of the turn
     assert.strictEqual(mockSituation.resolutionTracks![0]!.current, 1);
   });
+
+  test('Deterministic PRNG and Logging', () => {
+    // Two games with the exact same seed should yield identical shuffle/random behavior
+    const gameA = new Game(['Security Officer', 'Xenoethnologist'], 42);
+    const gameB = new Game(['Security Officer', 'Xenoethnologist'], 42);
+    const gameC = new Game(['Security Officer', 'Xenoethnologist'], 100);
+
+    // Decks, objectives, and play order should be identical for A and B
+    assert.deepStrictEqual(gameA.getState().playerOrder, gameB.getState().playerOrder);
+    assert.deepStrictEqual(
+      gameA.getState().players[0]?.deck.map(c => c.id),
+      gameB.getState().players[0]?.deck.map(c => c.id)
+    );
+
+    // Decks for C (different seed) should be different from A
+    const deckA = gameA.getState().players[0]?.deck.map(c => c.id);
+    const deckC = gameC.getState().players[0]?.deck.map(c => c.id);
+    assert.notDeepStrictEqual(deckA, deckC);
+
+    // Test sequence of numbers
+    const seqA = [gameA.randomInt(100, 'test1'), gameA.randomInt(100, 'test2')];
+    const seqB = [gameB.randomInt(100, 'test1'), gameB.randomInt(100, 'test2')];
+    const seqC = [gameC.randomInt(100, 'test1'), gameC.randomInt(100, 'test2')];
+
+    assert.deepStrictEqual(seqA, seqB);
+    assert.notDeepStrictEqual(seqA, seqC);
+
+    // Verify logs
+    const logA = gameA.getState().rngLog;
+    assert.ok(logA.length > 0);
+    const lastEntry = logA[logA.length - 1]!;
+    assert.strictEqual(lastEntry.turnNumber, 1);
+    assert.strictEqual(lastEntry.effect, 'test2');
+    assert.ok(typeof lastEntry.seedStateBefore === 'number');
+    assert.ok(typeof lastEntry.seedStateAfter === 'number');
+    assert.ok(typeof lastEntry.result === 'number');
+  });
+
+  test('Flattened Pool Track Selection (Smuggler Ambush)', () => {
+    // Setup game state with specific situations
+    const game = new Game(['Security Officer', 'Xenoethnologist'], 999);
+
+    const situationA: Card = {
+      id: 'RK-ADV-01',
+      name: 'Situation A',
+      type: 'Situation',
+      tone: 'Political',
+      nature: 'Cultural',
+      description: '1 track',
+      resolutionTracks: [
+        { id: 'track-A1', tone: 'Political', nature: 'Cultural', current: 2, target: 3, resultName: 'A1' }
+      ]
+    };
+
+    const situationB: Card = {
+      id: 'RK-ADV-02',
+      name: 'Situation B',
+      type: 'Situation',
+      tone: 'Mercantile',
+      nature: 'Technological',
+      description: '2 tracks',
+      resolutionTracks: [
+        { id: 'track-B1', tone: 'Mercantile', nature: 'Technological', current: 0, target: 3, resultName: 'B1' },
+        { id: 'track-B2', tone: 'Scientific', nature: 'Anomalous', current: 3, target: 5, resultName: 'B2' }
+      ]
+    };
+
+    game.getState().planetSituations = [situationA, situationB];
+
+    // Total situation tracks is 3: track-A1, track-B1, track-B2
+    // If we get a random situation track with filter current > 0, track-B1 should be excluded
+    // So the pool should only be track-A1 and track-B2.
+    // Let's call getRandomSituationTrack multiple times or verify the pool size/members.
+
+    const chosenTracks = new Set<string>();
+    // Since it's deterministic, let's run it many times to see if we hit both valid tracks
+    for (let i = 0; i < 50; i++) {
+      const match = game.getRandomSituationTrack('test select', item => item.track.current > 0);
+      assert.ok(match);
+      assert.notStrictEqual(match.track.id, 'track-B1'); // Should never be B1 because its current is 0
+      chosenTracks.add(match.track.id);
+    }
+
+    assert.strictEqual(chosenTracks.has('track-A1'), true);
+    assert.strictEqual(chosenTracks.has('track-B2'), true);
+    assert.strictEqual(chosenTracks.has('track-B1'), false);
+  });
 });
