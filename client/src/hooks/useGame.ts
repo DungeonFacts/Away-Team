@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { GameState, Action } from '../../../shared/types.js';
 
-const SOCKET_URL = 'http://localhost:3001';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
 
 export const useGame = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
