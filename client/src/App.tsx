@@ -4,7 +4,7 @@ import PlanetBoard from './components/PlanetBoard.tsx';
 import PlayerArea from './components/PlayerArea.tsx';
 import { History, MessageSquare, RefreshCw, Users, ShieldAlert, Trophy } from 'lucide-react';
 
-const PLAYER_NAMES = ['Security Officer', 'Xenobiologist'];
+const PLAYER_NAMES = ['Security Officer', 'Xenoethnologist'];
 
 function App() {
   const { gameState, joinGame, performAction, removeAction, lockIn, resetGame } = useGame();

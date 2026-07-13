@@ -1,0 +1,88 @@
+=== Away Team - Royal Koog Planet Deck(1).xlsx ===
+  RK-OBJ-01 | The Royal Embassy | Establish deep diplomatic ties on Koog. The Crown wants pristine protocol; the underworld wants open backdoors. / Favored by Royal Court / Favored by Kooga Nostra
+  RK-OBJ-02 | The Crystal Caverns | Secure the planet's unique mineral repositories. A clash between divine right and raw corporate greed. / Favored by Crystal Cultists / Favored by Kooga Nostra
+  RK-OBJ-03 | Establish an Outpost | Erect a permanent Federation foothold on the surface, balancing territorial sovereignty and sacred ground. / Favored by Royal Court / Favored by Crystal Cultists
+  RK-ADV-01 | Formal Audience | A tense meeting with the local authorities. / +1 Royal to Royal Embassy / +1 Criminal to Royal Embassy (By insulting the Crown)
+  RK-ADV-02 | Crystal Harvesting | Extraction of core minerals. / +1 Criminal to Crystal Caverns / +1 Religious to Crystal Caverns
+  RK-ADV-03 | Surveying Borderlands | Scoping the local geography. / +1 Royal to Establish an Outpost / +1 Religious to Establish an Outpost
+  RK-ADV-04 | Port Duty Tariffs | Establishing trading fees. / +1 Royal to Royal Embassy / +1 Criminal to Royal Embassy
+  RK-ADV-05 | The High Priest's Vision | Religious revelation requires response. / +1 Religious to Crystal Caverns / +1 Criminal to Crystal Caverns
+  RK-ADV-06 | Clearing Foundations | Prepping ground for construction. / +1 Royal to Establish an Outpost / +1 Religious to Establish an Outpost
+  RK-ADV-07 | Shady Backroom Deal | Under the table trading. / +1 Criminal to Royal Embassy / +1 Royal to Royal Embassy
+  RK-ADV-08 | Geothermal Resonance | Uncovering deep energies. / +1 Religious to Crystal Caverns / +1 Criminal to Crystal Caverns
+  RK-ADV-09 | Mapping the Spires | Cartography of structural formations. / +1 Religious to Establish an Outpost / +1 Royal to Establish an Outpost
+  RK-ADV-10 | Grand Royal Gala (Heavy) | Massive high-society gathering. / +2 Royal to Royal Embassy / +1 Royal, +1 Criminal to Royal Embassy
+  RK-ADV-11 | Subterranean Dig (Heavy) | Deep mineral excavation. / +2 Religious to Crystal Caverns / +2 Criminal to Crystal Caverns
+  RK-ADV-12 | Charter Negotiation (Heavy) | Rewriting structural rights. / +2 Royal to Establish an Outpost / +2 Religious to Establish an Outpost
+  RK-ADV-13 | Black Market Fence | Dealing with stolen materials. / +1 Criminal to Crystal Caverns / +1 Royal to Royal Embassy (Bust the ring)
+  RK-ADV-14 | Shrines of Luminescence | Pilgrimage holy sites. / +1 Religious to Establish an Outpost / +1 Criminal to Crystal Caverns
+  RK-ADV-15 | Corrupt Guard Patrol | Bribing or dealing with authorities. / +1 Criminal to Royal Embassy / +1 Royal to Royal Embassy
+  RK-CHL-01 | Accept a Bribe? | A tempting underworld offer. / +1 Criminal to Royal Embassy. Reward: Target player gains the 'Laser Rifle' item card. / +1 Royal to Royal Embassy (Report the bribery attempt).
+  RK-CHL-02 | Cave-in at the Cavern! | Rubble blocking entry. / Clear the rubble; remove Situation from play. / Passive: While unresolved, Scientific cards cannot advance The Crystal Caverns.
+  RK-CHL-03 | Sovereign Bureaucracy | Red tape slowing actions. / Overcome the red tape; remove Situation. / Passive: Political tactics deployed by any player can only Target this situation.
+  RK-CHL-04 | Smuggler Ambush | Hostile criminal intercept. / Secure the perimeter; remove Situation. / Passive: At the end of each turn, reduce a random Situation track by 1 point.
+  RK-CHL-05 | Unstable Radiation | Energy leakage. / Shield the leaks; remove Situation from play. / Passive: While active, all player Tactics cards require 1 additional action to activate.
+  RK-CHL-06 | Courtly Gossip | Whispers and rumors. / Defuse rumors: +1 Royal to Royal Embassy. / Sell the info: +1 Criminal to Royal Embassy.
+  RK-CHL-07 | Slum Shakedown | Gang interference. / Disperse the gang; remove Situation. / Passive: While active, Mercantile Tactics cannot Target Situations.
+  RK-CHL-08 | Religious Zealotry | Extremist disruption. / Disarm the crowd; remove Situation. / Passive: While active, Royal Objective Tracks cannot be advanced. Situations that would resolve when fulfilled remain on the board, and may still be resolved via other Tracks.
+  RK-CHL-09 | Counterfeit Crystals | Fake mineral trading. / Authenticate goods. Reward: Next turn, player gets 1 action point refund. / Passive: If unresolved after 3 turns, self-discards and adds 1 Criminal progress to Crystal Caverns.
+  RK-CHL-10 | Royal Escort Demands | Strict royal demands. / Accommodate the guards; remove Situation. / Passive: While active, any advancements to Criminal tracks advance 1 point less.
+--------------------------------------------------
+=== Away Team - Xenoethnologist - Manual Deck.xlsx ===
+  XE-TAC-01 | Sign Language | Target one Situation Track. Advance it by 1. If it is Political AND Cultural, advance it by an additional 2.
+  XE-TAC-02 | Sample Local Cuisine | Target one Situation Track. Advance it by 1. If it is Mercantile AND Biological, advance it by an additional 2.
+  XE-TAC-03 | Gather Data | Target one Situation Track. Reduce it by 1. If it is Technological OR Biological, draw 1 card.
+  XE-TAC-04 | Shift Paradigm | Target one Situation Track. If it is Anomalous, add the Scientific Tone this turn.
+  XE-TAC-05 | Cross-Disciplinary Analysis | Deploy one Policy card from your hand onto this card. Until the end of the turn, it is in play at the same time as your current Policy. At the end of the turn, return the Policy to your hand.
+  XE-TAC-06 | It's A Cookbook! | Target one Hostile Situation Track. Until the end of the turn, it has all four Natures (Biological, Technological, Cultural, and anomalous).
+  XE-TAC-07 | Comparative Anatomy | Target one Biological Situation Track. Until the end of the turn, Tactics which target another Biological Situation Track also Target this one.
+  XE-TAC-08 | Publish or Perish | Target one Situation Track. Advance it by 1. If this does not Fulfill the Track, reset its Advancement to zero.
+  XE-TAC-09 | Historical Precedent | Target one Situation Track. The next Situation to Emerge gains the passive effect of the Targeted Situation in addition to its current effects until the end of the next turn. The Emerging Situation also gains "Cannot be Targeted by Historical Precedent".
+  XE-TAC-10 | Leave Only Footprints | Target one Situation Track. Advance it by 1. For each other Tactic that Targets this track this turn, Reduce it by 1.
+  XE-TAC-11 | More Than Meets The Eye | Target one Situation Track. If it is Hostile, reduce it by 1 for each Nature it has. If is Political, advance it by 1 for each Nature it has.
+  XE-TAC-12 | Scan Alternate Spectra | Choose one Tone or one Nature. If the next Situation to Emerge has that Tone or Nature, draw 2 cards.
+  XE-TAC-13 | We Need More Gum! | Target one Deployed Equipment card. Return it to its owner's hand.
+  XE-EQP-01 | Universal Translator | When Deployed, add 2 tokens to this card. Remove one token: add the Cultural Nature to any Situation Track this turn.
+  XE-EQP-02 | Specimen Collection Kit | When Deployed, add 2 tokens to this card. Remove one token: add the Biological Nature to any Situation Track this turn.
+  XE-EQP-03 | Harmless Knick-Knacks | When Deployed, add 2 tokens to this card. Remove one token: add the Mercantile Tone to any Situation Track this turn.
+  XE-EQP-04 | Field Guide | When Deployed, add 1 token to this card. Activate this card and remove one token to add any one Policy from your deck to your hand.
+  XE-POL-01 | Draft Hypotheses | When you deploy a Tactic, draw a card.
+  XE-POL-02 | Material Culture | Mercantile Situation Tracks gain the Cultural Nature.
+  XE-POL-03 | The Personal Is Political | Political Situation Tracks gain the Biological Nature.
+  XE-POL-04 | Exotic Specimen Exchange | Scientific Situation Tracks gain the Anomalous Nature.
+  XE-POL-05 | The Medium Is The Message | Hostile Situation Tracks gain the Technological Nature.
+  XE-POL-06 | Sterile Technique | Biological Situation passive abilities do not trigger.
+  XE-POL-07 | Remote Diagnostics | Any time you would draw a card, draw 2 cards instead. You cannot Activate Tactics.
+  XE-POL-08 | When In Rome... | When you Activate a Cultural Tactic which targets a Situation Track, you may choose another Situation Track and Activate the Tactic again for free.
+  XE-POL-09 | Haggle | While this Policy is Deployed, your Tactics change Tone to Mercantile.
+  XE-POL-10 | They Should Have Sent A Poet | At the end of every turn, all Anomalous Situation Tracks advance by 1.
+--------------------------------------------------
+=== Away Team - Manual Security Officer Design.xlsx ===
+  SO-TAC-01 | Bodyguard Detail | Target one Situation. No Tactics can Reduce its Tracks this turn. If it has a Political Track, Advance that track by 1.
+  SO-TAC-02 | Set Phasers to Kill | Target one Situation Track. Advance it by 1. If it is Hostile, Advance it by 1 again. Collateral Damage: Reduce ALL Biological tracks by 1.
+  SO-TAC-03 | Show of Force | Target one Situation Track. Advance that track by 1. If it is Hostile, it by an additional 1. If it has a Cultural Nature, advance the chosen track by an additional 1.
+  SO-TAC-04 | Suppressive Fire | Target one Situation Track. Reduce that track by 1. If it is Hostile, reduce it by an additional 1.
+  SO-TAC-05 | Shoot First, Ask Questions Later | Target one Situation Track. Advance it by 2. Collateral Damage: Target a different Situation track with at least 2 points of advancement. Reduce that track by 2. This Tactic cannot be Activated if no valid target exists for the Collateral Damage.
+  SO-TAC-06 | Brute Force Entry | Target one Situation Track. Advance it by 1. If it is Hostile, Advance it by 1 again. Collateral Damage: During the Planet phase, one additional Situation Emerges.
+  SO-TAC-07 | Take My Sidearm | Target one Equipment card Deployed by another player. Add one token to that card.
+  SO-TAC-08 | Distraction! | Target one Situation Track. Reduce it by 1. The next Tactic to target the track this turn happens twice.
+  SO-TAC-09 | Call in Reinforcements | Every player may Deploy one Tactics card. Collateral Damage: Until the end of next turn, all players Draw one less card whenever they would draw cards.
+  SO-TAC-10 | Preemptive Strike | Target one Situation Track that Emerged this turn. Advance that track by 2.
+  SO-TAC-11 | Fisticuffs | Target one Situation Track. Advance that track by 1. Collateral Damage: No Equipment resolves this turn. If another player spent an equipment token, return it to the equipment.
+  SO-TAC-12 | Tactical Retreat | Target one Situation Track with at least one point of advancement. Reduce that track by 1. Draw one card.
+  SO-TAC-13 | We've Got Wounded! | Target one Situation Track that Advanced last turn. If it is Hostile, it gains the Biological Nature until the end of the Planet phase.
+  SO-TAC-14 | Leave That To The Experts | Target one Situation Track with the Scientific, Political, or Mercantile Tone. If it is Fulfilled this turn, every player draws a card.
+  SO-TAC-15 | Unidentified Bogey | Target one Situation Track with the Anomalous Nature. Advance it by 1. Collateral Damage: The next Scientific card changes targets to this Track.
+  SO-TAC-16 | If It Bleeds... | Target one Situation Track. Advance it by one. If it is Biological, advance it by an additional 1.
+  SO-TAC-17 | Vulnerable Subsystem | Target one Situation Track. Advance it by one. If it is Technological, reduce it by 2.
+  SO-TAC-18 | Evacuate the Civilians | Target one Situation with at least 1 Hostile Track. Reduce the Hostile Track by 1. Advance all non-Hostile tracks by 1. Collateral Damage: No player may target this Situation next turn.
+  SO-TAC-19 | I've Got Your Six | Target one Situation. If another player targets that Situation this turn, they may take an extra action next turn.
+  SO-TAC-20 | Solitary Confinement | Target one Situation. Disable all passive abilities on the Situation. Collateral Damage:  No other Tactics can Target it next turn.
+  SO-EQP-01 | Heavy Body Armor | Add two tokens to this card when deployed. Remove a token to negate 1 Collateral Damage effect.
+  SO-EQP-02 | Survival Kit | Add two tokens to this card when deployed. Remove a token to draw card. If you subsequently have less than 3 cards in your hand, draw another card.
+  SO-EQP-03 | Ceremonial Weaponry | Add two tokens to this card when deployed. Remove a token to target one Situation Track, and permanently add the Hostile Tone to it for all players.
+  SO-POL-01 | Heroic Sacrifice | When a Situation effect targets a player, you may discard one card to have that effect target you instead.
+  SO-POL-02 | Vanguard Duty | Each turn. the first time a new Situation Emerges, you may draw one card from your deck.
+  SO-POL-03 | Constant Vigilance | At the beginning of your turn, Target one Situation Track. You may treat that track as having the Hostile Tone this turn.
+  SO-POL-04 | Taking Point | During card resolution, your cards resolve first. Other players' cards resolve as normal.
+--------------------------------------------------

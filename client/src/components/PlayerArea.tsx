@@ -8,7 +8,7 @@ interface PlayerAreaProps {
   onAction: (action: Action) => void;
   onRemoveAction: (index: number) => void;
   onLockIn: () => void;
-  selectedObjectiveId?: string;
+  selectedObjectiveId?: string | undefined;
 }
 
 const ToneIcon = ({ tone, size = 16 }: { tone: string, size?: number }) => {

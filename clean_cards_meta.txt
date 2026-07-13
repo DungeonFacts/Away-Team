@@ -1,0 +1,56 @@
+=== XENO CARDS ===
+ID: XE-TAC-01, Name: Sign Language, Type: Tactics, Tone: Scientific, Nature: Biological
+ID: XE-TAC-02, Name: Sample Local Cuisine, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-TAC-03, Name: Gather Data, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-TAC-04, Name: Shift Paradigm, Type: Tactics, Tone: Scientific, Nature: Technological
+ID: XE-TAC-05, Name: Cross-Disciplinary Analysis, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-TAC-06, Name: It's A Cookbook!, Type: Tactics, Tone: Scientific, Nature: Biological
+ID: XE-TAC-07, Name: Comparative Anatomy, Type: Tactics, Tone: Scientific, Nature: Biological
+ID: XE-TAC-08, Name: Publish or Perish, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-TAC-09, Name: Historical Precedent, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-TAC-10, Name: Leave Only Footprints, Type: Tactics, Tone: Scientific, Nature: Biological
+ID: XE-TAC-11, Name: More Than Meets The Eye, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-TAC-12, Name: Scan Alternate Spectra, Type: Tactics, Tone: Scientific, Nature: Technological
+ID: XE-TAC-13, Name: We Need More Gum!, Type: Tactics, Tone: Scientific, Nature: Cultural
+ID: XE-EQP-01, Name: Universal Translator, Type: Equipment, Tone: Scientific, Nature: Technological
+ID: XE-EQP-02, Name: Specimen Collection Kit, Type: Equipment, Tone: Scientific, Nature: Technological
+ID: XE-EQP-03, Name: Harmless Knick-Knacks, Type: Equipment, Tone: Scientific, Nature: Anomalous
+ID: XE-EQP-04, Name: Field Guide, Type: Equipment, Tone: Scientific, Nature: Anomalous
+ID: XE-POL-01, Name: Draft Hypotheses, Type: Policy, Tone: Scientific, Nature: Technological
+ID: XE-POL-02, Name: Material Culture, Type: Policy, Tone: Scientific, Nature: Technological
+ID: XE-POL-03, Name: The Personal Is Political, Type: Policy, Tone: Scientific, Nature: Cultural
+ID: XE-POL-04, Name: Exotic Specimen Exchange, Type: Policy, Tone: Scientific, Nature: Technological
+ID: XE-POL-05, Name: The Medium Is The Message, Type: Policy, Tone: Scientific, Nature: Cultural
+ID: XE-POL-06, Name: Sterile Technique, Type: Policy, Tone: Scientific, Nature: Biological
+ID: XE-POL-07, Name: Remote Diagnostics, Type: Policy, Tone: Scientific, Nature: Technological
+ID: XE-POL-08, Name: When In Rome..., Type: Policy, Tone: Scientific, Nature: Biological
+ID: XE-POL-09, Name: Haggle, Type: Policy, Tone: Scientific, Nature: Cultural
+ID: XE-POL-10, Name: They Should Have Sent A Poet, Type: Policy, Tone: Scientific, Nature: Anomalous
+=== SECURITY CARDS ===
+ID: SO-TAC-01, Name: Bodyguard Detail, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-02, Name: Set Phasers to Kill, Type: Tactics, Tone: Hostile, Nature: Technological
+ID: SO-TAC-03, Name: Show of Force, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-04, Name: Suppressive Fire, Type: Tactics, Tone: Hostile, Nature: Technological
+ID: SO-TAC-05, Name: Shoot First, Ask Questions Later, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-06, Name: Brute Force Entry, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-07, Name: Take My Sidearm, Type: Tactics, Tone: Hostile, Nature: Technological
+ID: SO-TAC-08, Name: Distraction!, Type: Tactics, Tone: Hostile, Nature: Biological
+ID: SO-TAC-09, Name: Call in Reinforcements, Type: Tactics, Tone: Hostile, Nature: Technological
+ID: SO-TAC-10, Name: Preemptive Strike, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-11, Name: Fisticuffs, Type: Tactics, Tone: Hostile, Nature: Biological
+ID: SO-TAC-12, Name: Tactical Retreat, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-13, Name: We've Got Wounded!, Type: Tactics, Tone: Hostile, Nature: Biological
+ID: SO-TAC-14, Name: Leave That To The Experts, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-15, Name: Unidentified Bogey, Type: Tactics, Tone: Hostile, Nature: Technological
+ID: SO-TAC-16, Name: If It Bleeds..., Type: Tactics, Tone: Hostile, Nature: Biological
+ID: SO-TAC-17, Name: Vulnerable Subsystem, Type: Tactics, Tone: Hostile, Nature: Technological
+ID: SO-TAC-18, Name: Evacuate the Civilians, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-19, Name: I've Got Your Six, Type: Tactics, Tone: Hostile, Nature: Cultural
+ID: SO-TAC-20, Name: Solitary Confinement, Type: Tactics, Tone: Hostile, Nature: Biological
+ID: SO-EQP-01, Name: Heavy Body Armor, Type: Equipment, Tone: Hostile, Nature: Technological
+ID: SO-EQP-02, Name: Survival Kit, Type: Equipment, Tone: Hostile, Nature: Technological
+ID: SO-EQP-03, Name: Ceremonial Weaponry, Type: Equipment, Tone: Hostile, Nature: Cultural
+ID: SO-POL-01, Name: Heroic Sacrifice, Type: Policy, Tone: Hostile, Nature: Biological
+ID: SO-POL-02, Name: Vanguard Duty, Type: Policy, Tone: Hostile, Nature: Cultural
+ID: SO-POL-03, Name: Constant Vigilance, Type: Policy, Tone: Hostile, Nature: Cultural
+ID: SO-POL-04, Name: Taking Point, Type: Policy, Tone: Hostile, Nature: Biological
