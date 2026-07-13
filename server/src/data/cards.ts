@@ -2,184 +2,642 @@ import type { Card } from '../../../shared/types.js';
 
 export const SECURITY_OFFICER_DECK: Card[] = [
   {
-    id: 'so-1',
-    name: 'Set Phasers to Stun',
+    id: 'SO-TAC-01',
+    name: "Bodyguard Detail",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation. No Tactics can Reduce its Tracks this turn. If it has a Political Track, Advance that track by 1.",
+  },
+  {
+    id: 'SO-TAC-02',
+    name: "Set Phasers to Kill",
     type: 'Tactic',
     tone: 'Hostile',
     nature: 'Technological',
-    description: 'Hostile tracks cannot advance this turn. Political cards have no effect this turn.',
-    effects: [
-      { type: 'SUPPRESS_TRACK', trigger: 'ON_ACTIVATE', trackTone: 'Hostile' },
-      { type: 'SUPPRESS_TONE', trigger: 'ON_ACTIVATE', tone: 'Political' }
-    ]
+    description: "Target one Situation Track. Advance it by 1. If it is Hostile, Advance it by 1 again. Collateral Damage: Reduce ALL Biological tracks by 1.",
   },
   {
-    id: 'so-2',
-    name: 'Tactical Analysis',
+    id: 'SO-TAC-03',
+    name: "Show of Force",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation Track. Advance that track by 1. If it is Hostile, it by an additional 1. If it has a Cultural Nature, advance the chosen track by an additional 1.",
+  },
+  {
+    id: 'SO-TAC-04',
+    name: "Suppressive Fire",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Target one Situation Track. Reduce that track by 1. If it is Hostile, reduce it by an additional 1.",
+  },
+  {
+    id: 'SO-TAC-05',
+    name: "Shoot First, Ask Questions Later",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation Track. Advance it by 2. Collateral Damage: Target a different Situation track with at least 2 points of advancement. Reduce that track by 2. This Tactic cannot be Activated if no valid target exists for the Collateral Damage.",
+  },
+  {
+    id: 'SO-TAC-06',
+    name: "Brute Force Entry",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation Track. Advance it by 1. If it is Hostile, Advance it by 1 again. Collateral Damage: During the Planet phase, one additional Situation Emerges.",
+  },
+  {
+    id: 'SO-TAC-07',
+    name: "Take My Sidearm",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Target one Equipment card Deployed by another player. Add one token to that card.",
+  },
+  {
+    id: 'SO-TAC-08',
+    name: "Distraction!",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "Target one Situation Track. Reduce it by 1. The next Tactic to target the track this turn happens twice.",
+  },
+  {
+    id: 'SO-TAC-09',
+    name: "Call in Reinforcements",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Every player may Deploy one Tactics card. Collateral Damage: Until the end of next turn, all players Draw one less card whenever they would draw cards.",
+  },
+  {
+    id: 'SO-TAC-10',
+    name: "Preemptive Strike",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation Track that Emerged this turn. Advance that track by 2.",
+  },
+  {
+    id: 'SO-TAC-11',
+    name: "Fisticuffs",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "Target one Situation Track. Advance that track by 1. Collateral Damage: No Equipment resolves this turn. If another player spent an equipment token, return it to the equipment.",
+  },
+  {
+    id: 'SO-TAC-12',
+    name: "Tactical Retreat",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation Track with at least one point of advancement. Reduce that track by 1. Draw one card.",
+  },
+  {
+    id: 'SO-TAC-13',
+    name: "We've Got Wounded!",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "Target one Situation Track that Advanced last turn. If it is Hostile, it gains the Biological Nature until the end of the Planet phase.",
+  },
+  {
+    id: 'SO-TAC-14',
+    name: "Leave That To The Experts",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation Track with the Scientific, Political, or Mercantile Tone. If it is Fulfilled this turn, every player draws a card.",
+  },
+  {
+    id: 'SO-TAC-15',
+    name: "Unidentified Bogey",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Target one Situation Track with the Anomalous Nature. Advance it by 1. Collateral Damage: The next Scientific card changes targets to this Track.",
+  },
+  {
+    id: 'SO-TAC-16',
+    name: "If It Bleeds...",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "Target one Situation Track. Advance it by one. If it is Biological, advance it by an additional 1.",
+  },
+  {
+    id: 'SO-TAC-17',
+    name: "Vulnerable Subsystem",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Target one Situation Track. Advance it by one. If it is Technological, reduce it by 2.",
+  },
+  {
+    id: 'SO-TAC-18',
+    name: "Evacuate the Civilians",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation with at least 1 Hostile Track. Reduce the Hostile Track by 1. Advance all non-Hostile tracks by 1. Collateral Damage: No player may target this Situation next turn.",
+  },
+  {
+    id: 'SO-TAC-19',
+    name: "I've Got Your Six",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Target one Situation. If another player targets that Situation this turn, they may take an extra action next turn.",
+  },
+  {
+    id: 'SO-TAC-20',
+    name: "Solitary Confinement",
+    type: 'Tactic',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "Target one Situation. Disable all passive abilities on the Situation. Collateral Damage:  No other Tactics can Target it next turn.",
+  },
+  {
+    id: 'SO-EQP-01',
+    name: "Heavy Body Armor",
+    type: 'Equipment',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Add two tokens to this card when deployed. Remove a token to negate 1 Collateral Damage effect.",
+    uses: 2,
+  },
+  {
+    id: 'SO-EQP-02',
+    name: "Survival Kit",
+    type: 'Equipment',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Add two tokens to this card when deployed. Remove a token to draw card. If you subsequently have less than 3 cards in your hand, draw another card.",
+    uses: 2,
+  },
+  {
+    id: 'SO-EQP-03',
+    name: "Ceremonial Weaponry",
+    type: 'Equipment',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Add two tokens to this card when deployed. Remove a token to target one Situation Track, and permanently add the Hostile Tone to it for all players.",
+    uses: 2,
+  },
+  {
+    id: 'SO-POL-01',
+    name: "Heroic Sacrifice",
+    type: 'Policy',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "When a Situation effect targets a player, you may discard one card to have that effect target you instead.",
+  },
+  {
+    id: 'SO-POL-02',
+    name: "Vanguard Duty",
+    type: 'Policy',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "Each turn. the first time a new Situation Emerges, you may draw one card from your deck.",
+  },
+  {
+    id: 'SO-POL-03',
+    name: "Constant Vigilance",
+    type: 'Policy',
+    tone: 'Hostile',
+    nature: 'Cultural',
+    description: "At the beginning of your turn, Target one Situation Track. You may treat that track as having the Hostile Tone this turn.",
+  },
+  {
+    id: 'SO-POL-04',
+    name: "Taking Point",
+    type: 'Policy',
+    tone: 'Hostile',
+    nature: 'Biological',
+    description: "During card resolution, your cards resolve first. Other players' cards resolve as normal.",
+  },
+];
+
+export const XENOETHNOLOGIST_DECK: Card[] = [
+  {
+    id: 'XE-TAC-01',
+    name: "Sign Language",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Biological',
+    description: "Target one Situation Track. Advance it by 1. If it is Political AND Cultural, advance it by an additional 2.",
+  },
+  {
+    id: 'XE-TAC-02',
+    name: "Sample Local Cuisine",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Target one Situation Track. Advance it by 1. If it is Mercantile AND Biological, advance it by an additional 2.",
+  },
+  {
+    id: 'XE-TAC-03',
+    name: "Gather Data",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Target one Situation Track. Reduce it by 1. If it is Technological OR Biological, draw 1 card.",
+  },
+  {
+    id: 'XE-TAC-04',
+    name: "Shift Paradigm",
     type: 'Tactic',
     tone: 'Scientific',
     nature: 'Technological',
-    description: 'Advance one Hostile track twice.',
-    effects: [
-      { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Hostile', amount: 2 }
-    ]
+    description: "Target one Situation Track. If it is Anomalous, add the Scientific Tone this turn.",
   },
-  ...Array.from({ length: 18 }, (_, i) => ({
-    id: `so-p-${i}`,
-    name: `Security Card ${i + 3}`,
-    type: 'Tactic' as const,
-    tone: 'Hostile' as const,
-    nature: 'Technological' as const,
-    description: 'Thematic security placeholder.',
-  })),
-];
-
-export const XENOBIOLOGIST_DECK: Card[] = [
   {
-    id: 'xb-1',
-    name: 'Peace Offering',
-    type: 'Equipment',
-    tone: 'Political',
+    id: 'XE-TAC-05',
+    name: "Cross-Disciplinary Analysis",
+    type: 'Tactic',
+    tone: 'Scientific',
     nature: 'Cultural',
-    description: 'Choose one Political Situation. Advance it three times. Discard Peace Offering.',
-    uses: 1,
-    effects: [
-      { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Political', amount: 3 }
-    ]
+    description: "Deploy one Policy card from your hand onto this card. Until the end of the turn, it is in play at the same time as your current Policy. At the end of the turn, return the Policy to your hand.",
   },
   {
-    id: 'xb-2',
-    name: 'Field Scanner',
+    id: 'XE-TAC-06',
+    name: "It's A Cookbook!",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Biological',
+    description: "Target one Hostile Situation Track. Until the end of the turn, it has all four Natures (Biological, Technological, Cultural, and anomalous).",
+  },
+  {
+    id: 'XE-TAC-07',
+    name: "Comparative Anatomy",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Biological',
+    description: "Target one Biological Situation Track. Until the end of the turn, Tactics which target another Biological Situation Track also Target this one.",
+  },
+  {
+    id: 'XE-TAC-08',
+    name: "Publish or Perish",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Target one Situation Track. Advance it by 1. If this does not Fulfill the Track, reset its Advancement to zero.",
+  },
+  {
+    id: 'XE-TAC-09',
+    name: "Historical Precedent",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Target one Situation Track. The next Situation to Emerge gains the passive effect of the Targeted Situation in addition to its current effects until the end of the next turn. The Emerging Situation also gains \"Cannot be Targeted by Historical Precedent\".",
+  },
+  {
+    id: 'XE-TAC-10',
+    name: "Leave Only Footprints",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Biological',
+    description: "Target one Situation Track. Advance it by 1. For each other Tactic that Targets this track this turn, Reduce it by 1.",
+  },
+  {
+    id: 'XE-TAC-11',
+    name: "More Than Meets The Eye",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Target one Situation Track. If it is Hostile, reduce it by 1 for each Nature it has. If is Political, advance it by 1 for each Nature it has. ",
+  },
+  {
+    id: 'XE-TAC-12',
+    name: "Scan Alternate Spectra",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Technological',
+    description: "Choose one Tone or one Nature. If the next Situation to Emerge has that Tone or Nature, draw 2 cards.",
+  },
+  {
+    id: 'XE-TAC-13',
+    name: "We Need More Gum!",
+    type: 'Tactic',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Target one Deployed Equipment card. Return it to its owner's hand.",
+  },
+  {
+    id: 'XE-EQP-01',
+    name: "Universal Translator",
     type: 'Equipment',
     tone: 'Scientific',
     nature: 'Technological',
-    description: 'Advance one Scientific track.',
-    uses: 3,
-    effects: [
-      { type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Scientific', amount: 1 }
-    ]
+    description: "When Deployed, add 2 tokens to this card. Remove one token: add the Cultural Nature to any Situation Track this turn.",
+    uses: 2,
   },
-  ...Array.from({ length: 18 }, (_, i) => ({
-    id: `xb-p-${i}`,
-    name: `Xeno Card ${i + 3}`,
-    type: 'Tactic' as const,
-    tone: 'Scientific' as const,
-    nature: 'Biological' as const,
-    description: 'Thematic xenobiology placeholder.',
-  })),
+  {
+    id: 'XE-EQP-02',
+    name: "Specimen Collection Kit",
+    type: 'Equipment',
+    tone: 'Scientific',
+    nature: 'Technological',
+    description: "When Deployed, add 2 tokens to this card. Remove one token: add the Biological Nature to any Situation Track this turn.",
+    uses: 2,
+  },
+  {
+    id: 'XE-EQP-03',
+    name: "Harmless Knick-Knacks",
+    type: 'Equipment',
+    tone: 'Scientific',
+    nature: 'Anomalous',
+    description: "When Deployed, add 2 tokens to this card. Remove one token: add the Mercantile Tone to any Situation Track this turn.",
+    uses: 2,
+  },
+  {
+    id: 'XE-EQP-04',
+    name: "Field Guide",
+    type: 'Equipment',
+    tone: 'Scientific',
+    nature: 'Anomalous',
+    description: "When Deployed, add 1 token to this card. Activate this card and remove one token to add any one Policy from your deck to your hand.",
+    uses: 1,
+  },
+  {
+    id: 'XE-POL-01',
+    name: "Draft Hypotheses",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Technological',
+    description: "When you deploy a Tactic, draw a card.",
+  },
+  {
+    id: 'XE-POL-02',
+    name: "Material Culture",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Technological',
+    description: "Mercantile Situation Tracks gain the Cultural Nature.",
+  },
+  {
+    id: 'XE-POL-03',
+    name: "The Personal Is Political",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Political Situation Tracks gain the Biological Nature.",
+  },
+  {
+    id: 'XE-POL-04',
+    name: "Exotic Specimen Exchange",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Technological',
+    description: "Scientific Situation Tracks gain the Anomalous Nature.",
+  },
+  {
+    id: 'XE-POL-05',
+    name: "The Medium Is The Message",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "Hostile Situation Tracks gain the Technological Nature.",
+  },
+  {
+    id: 'XE-POL-06',
+    name: "Sterile Technique",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Biological',
+    description: "Biological Situation passive abilities do not trigger.",
+  },
+  {
+    id: 'XE-POL-07',
+    name: "Remote Diagnostics",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Technological',
+    description: "Any time you would draw a card, draw 2 cards instead. You cannot Activate Tactics.",
+  },
+  {
+    id: 'XE-POL-08',
+    name: "When In Rome...",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Biological',
+    description: "When you Activate a Cultural Tactic which targets a Situation Track, you may choose another Situation Track and Activate the Tactic again for free.",
+  },
+  {
+    id: 'XE-POL-09',
+    name: "Haggle",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Cultural',
+    description: "While this Policy is Deployed, your Tactics change Tone to Mercantile.",
+  },
+  {
+    id: 'XE-POL-10',
+    name: "They Should Have Sent A Poet",
+    type: 'Policy',
+    tone: 'Scientific',
+    nature: 'Anomalous',
+    description: "At the end of every turn, all Anomalous Situation Tracks advance by 1.",
+  },
 ];
 
 export const ROYAL_KOOG_OBJECTIVES: Card[] = [
   {
     id: 'RK-OBJ-01',
-    name: 'The Royal Embassy',
+    name: "The Royal Embassy",
     type: 'Objective',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Establish deep diplomatic ties on Koog. The Crown wants pristine protocol; the underworld wants open backdoors.',
+    description: "Establish deep diplomatic ties on Koog. The Crown wants pristine protocol; the underworld wants open backdoors.",
     resolutionTracks: [
-      { id: 'rk-obj-01-t1', tag: 'Royal', current: 0, target: 3, resultName: 'Favored by Royal Court', resultTags: ['RoyalEnding'] },
-      { id: 'rk-obj-01-t2', tag: 'Criminal', current: 0, target: 3, resultName: 'Favored by Kooga Nostra', resultTags: ['CriminalEnding'] },
+      {
+        id: 'rk-obj-01-t1',
+        tag: 'Royal',
+        current: 0,
+        target: 3,
+        resultName: "Favored by Royal Court",
+        resultTags: ['RoyalEnding'],
+      },
+      {
+        id: 'rk-obj-01-t2',
+        tag: 'Criminal',
+        current: 0,
+        target: 3,
+        resultName: "Favored by Kooga Nostra",
+        resultTags: ['CriminalEnding'],
+      },
     ],
-    passiveEffects: [
-      { type: 'MULTIPLY_ADVANCE', factor: 2, sourceTone: 'Political', targetCardName: 'The Royal Embassy', targetTrackTag: 'Royal' }
-    ],
-    tags: ['RoyalCourt']
   },
   {
     id: 'RK-OBJ-02',
-    name: 'The Crystal Caverns',
+    name: "The Crystal Caverns",
     type: 'Objective',
     tone: 'Scientific',
     nature: 'Anomalous',
     description: "Secure the planet's unique mineral repositories. A clash between divine right and raw corporate greed.",
     resolutionTracks: [
-      { id: 'rk-obj-02-t1', tag: 'Religious', current: 0, target: 3, resultName: 'Favored by Crystal Cultists', resultTags: ['ReligiousEnding'] },
-      { id: 'rk-obj-02-t2', tag: 'Criminal', current: 0, target: 3, resultName: 'Favored by Kooga Nostra', resultTags: ['CriminalEnding'] },
+      {
+        id: 'rk-obj-02-t1',
+        tag: 'Religious',
+        current: 0,
+        target: 3,
+        resultName: "Favored by Crystal Cultists",
+        resultTags: ['ReligiousEnding'],
+      },
+      {
+        id: 'rk-obj-02-t2',
+        tag: 'Criminal',
+        current: 0,
+        target: 3,
+        resultName: "Favored by Kooga Nostra",
+        resultTags: ['CriminalEnding'],
+      },
     ],
-    passiveEffects: [
-      { type: 'MULTIPLY_ADVANCE', factor: 2, sourceTone: 'Scientific', targetCardName: 'The Crystal Caverns', targetTrackTag: 'Religious' }
-    ],
-    tags: ['CrystalCaverns']
   },
   {
     id: 'RK-OBJ-03',
-    name: 'Establish an Outpost',
+    name: "Establish an Outpost",
     type: 'Objective',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Erect a permanent Federation foothold on the surface, balancing territorial sovereignty and sacred ground.',
+    description: "Erect a permanent Federation foothold on the surface, balancing territorial sovereignty and sacred ground.",
     resolutionTracks: [
-      { id: 'rk-obj-03-t1', tag: 'Royal', current: 0, target: 3, resultName: 'Favored by Royal Court', resultTags: ['RoyalEnding'] },
-      { id: 'rk-obj-03-t2', tag: 'Religious', current: 0, target: 3, resultName: 'Favored by Crystal Cultists', resultTags: ['ReligiousEnding'] },
+      {
+        id: 'rk-obj-03-t1',
+        tag: 'Royal',
+        current: 0,
+        target: 3,
+        resultName: "Favored by Royal Court",
+        resultTags: ['RoyalEnding'],
+      },
+      {
+        id: 'rk-obj-03-t2',
+        tag: 'Religious',
+        current: 0,
+        target: 3,
+        resultName: "Favored by Crystal Cultists",
+        resultTags: ['ReligiousEnding'],
+      },
     ],
-    effects: [
-      { type: 'REDUCE_TRACK', trigger: 'PLANET_TURN', amount: 1, nature: 'Cultural', trackTone: 'Hostile' }
-    ],
-    tags: ['Outpost']
-  }
-];
-
-export const ROYAL_KOOG_REWARDS: Card[] = [
-  {
-    id: 'RK-REW-01',
-    name: 'Laser Rifle',
-    type: 'Reward',
-    tone: 'Hostile',
-    nature: 'Technological',
-    description: 'Advance a Hostile track twice.',
-    effects: [{ type: 'ADVANCE', trigger: 'ON_ACTIVATE', tone: 'Hostile', amount: 2 }]
-  }
+  },
 ];
 
 export const ROYAL_KOOG_SITUATIONS: Card[] = [
   {
     id: 'RK-ADV-01',
-    name: 'Royal Procession',
+    name: "Formal Audience",
     type: 'Situation',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'The King is moving through the spires.',
+    description: "A tense meeting with the local authorities.",
     resolutionTracks: [
-      { id: 'rk-adv-01-t1', tone: 'Political', nature: 'Cultural', current: 0, target: 3, resultName: 'Escorted', resultTags: ['Royal'] },
-      { id: 'rk-adv-01-t2', tone: 'Hostile', nature: 'Cultural', current: 0, target: 3, resultName: 'Disrupted', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-adv-01-t1',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Royal Embassy",
+        resultTags: ['Royal'],
+      },
+      {
+        id: 'rk-adv-01-t2',
+        tone: 'Hostile',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Royal Embassy (By insulting the Crown)",
+        resultTags: ['Royal', 'Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-02',
-    name: 'Crystal Harmonizing',
+    name: "Crystal Harvesting",
     type: 'Situation',
-    tone: 'Scientific',
-    nature: 'Anomalous',
-    description: 'The caverns are humming with energy.',
+    tone: 'Mercantile',
+    nature: 'Technological',
+    description: "Extraction of core minerals.",
     resolutionTracks: [
-      { id: 'rk-adv-02-t1', tone: 'Scientific', nature: 'Anomalous', current: 0, target: 3, resultName: 'Harmonized', resultTags: ['Religious'] },
-      { id: 'rk-adv-02-t2', tone: 'Mercantile', nature: 'Anomalous', current: 0, target: 3, resultName: 'Harvested', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-adv-02-t1',
+        tone: 'Mercantile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Crystal Caverns",
+        resultTags: ['Criminal'],
+      },
+      {
+        id: 'rk-adv-02-t2',
+        tone: 'Scientific',
+        nature: 'Anomalous',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Crystal Caverns",
+        resultTags: ['Religious'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-03',
-    name: 'Surveying Borderlands',
+    name: "Surveying Borderlands",
     type: 'Situation',
     tone: 'Scientific',
     nature: 'Biological',
-    description: 'Scoping the local geography.',
+    description: "Scoping the local geography.",
     resolutionTracks: [
-      { id: 'rk-adv-03-t1', tone: 'Scientific', nature: 'Biological', current: 0, target: 3, resultName: 'Surveyed', resultTags: ['Royal'] },
-      { id: 'rk-adv-03-t2', tone: 'Political', nature: 'Anomalous', current: 0, target: 3, resultName: 'Negotiated', resultTags: ['Religious'] }
-    ]
+      {
+        id: 'rk-adv-03-t1',
+        tone: 'Scientific',
+        nature: 'Biological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Establish an Outpost",
+        resultTags: ['Royal'],
+      },
+      {
+        id: 'rk-adv-03-t2',
+        tone: 'Political',
+        nature: 'Anomalous',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Establish an Outpost",
+        resultTags: ['Religious'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-04',
-    name: 'Port Duty Tariffs',
+    name: "Port Duty Tariffs",
     type: 'Situation',
     tone: 'Mercantile',
     nature: 'Cultural',
-    description: 'Establishing trading fees.',
+    description: "Establishing trading fees.",
     resolutionTracks: [
-      { id: 'rk-adv-04-t1', tone: 'Mercantile', nature: 'Cultural', current: 0, target: 3, resultName: 'Legitimized', resultTags: ['Royal'] },
-      { id: 'rk-adv-04-t2', tone: 'Mercantile', nature: 'Technological', current: 0, target: 3, resultName: 'Bypassed', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-adv-04-t1',
+        tone: 'Mercantile',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Royal Embassy",
+        resultTags: ['Royal'],
+      },
+      {
+        id: 'rk-adv-04-t2',
+        tone: 'Mercantile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Royal Embassy",
+        resultTags: ['Royal', 'Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-05',
@@ -187,274 +645,517 @@ export const ROYAL_KOOG_SITUATIONS: Card[] = [
     type: 'Situation',
     tone: 'Political',
     nature: 'Anomalous',
-    description: 'Religious revelation requires response.',
+    description: "Religious revelation requires response.",
     resolutionTracks: [
-      { id: 'rk-adv-05-t1', tone: 'Political', nature: 'Anomalous', current: 0, target: 3, resultName: 'Interpreted', resultTags: ['Religious'] },
-      { id: 'rk-adv-05-t2', tone: 'Hostile', nature: 'Anomalous', current: 0, target: 3, resultName: 'Suppressed', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-adv-05-t1',
+        tone: 'Political',
+        nature: 'Anomalous',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Crystal Caverns",
+        resultTags: ['Religious'],
+      },
+      {
+        id: 'rk-adv-05-t2',
+        tone: 'Hostile',
+        nature: 'Anomalous',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Crystal Caverns",
+        resultTags: ['Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-06',
-    name: 'Clearing Foundations',
+    name: "Clearing Foundations",
     type: 'Situation',
     tone: 'Hostile',
     nature: 'Technological',
-    description: 'Prepping ground for construction.',
+    description: "Prepping ground for construction.",
     resolutionTracks: [
-      { id: 'rk-adv-06-t1', tone: 'Hostile', nature: 'Technological', current: 0, target: 3, resultName: 'Cleared (Force)', resultTags: ['Royal'] },
-      { id: 'rk-adv-06-t2', tone: 'Scientific', nature: 'Biological', current: 0, target: 3, resultName: 'Cleared (Eco)', resultTags: ['Religious'] }
-    ]
+      {
+        id: 'rk-adv-06-t1',
+        tone: 'Hostile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Establish an Outpost",
+        resultTags: ['Royal'],
+      },
+      {
+        id: 'rk-adv-06-t2',
+        tone: 'Scientific',
+        nature: 'Biological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Establish an Outpost",
+        resultTags: ['Religious'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-07',
-    name: 'Shady Backroom Deal',
+    name: "Shady Backroom Deal",
     type: 'Situation',
     tone: 'Mercantile',
     nature: 'Cultural',
-    description: 'Under the table trading.',
+    description: "Under the table trading.",
     resolutionTracks: [
-      { id: 'rk-adv-07-t1', tone: 'Mercantile', nature: 'Cultural', current: 0, target: 3, resultName: 'Dealt', resultTags: ['Criminal'] },
-      { id: 'rk-adv-07-t2', tone: 'Political', nature: 'Cultural', current: 0, target: 3, resultName: 'Exposed', resultTags: ['Royal'] }
-    ]
+      {
+        id: 'rk-adv-07-t1',
+        tone: 'Mercantile',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Royal Embassy",
+        resultTags: ['Royal', 'Criminal'],
+      },
+      {
+        id: 'rk-adv-07-t2',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Royal Embassy",
+        resultTags: ['Royal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-08',
-    name: 'Geothermal Resonance',
+    name: "Geothermal Resonance",
     type: 'Situation',
     tone: 'Scientific',
     nature: 'Technological',
-    description: 'Uncovering deep energies.',
+    description: "Uncovering deep energies.",
     resolutionTracks: [
-      { id: 'rk-adv-08-t1', tone: 'Scientific', nature: 'Technological', current: 0, target: 3, resultName: 'Tapped (Divine)', resultTags: ['Religious'] },
-      { id: 'rk-adv-08-t2', tone: 'Mercantile', nature: 'Technological', current: 0, target: 3, resultName: 'Tapped (Profit)', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-adv-08-t1',
+        tone: 'Scientific',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Crystal Caverns",
+        resultTags: ['Religious'],
+      },
+      {
+        id: 'rk-adv-08-t2',
+        tone: 'Mercantile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Crystal Caverns",
+        resultTags: ['Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-09',
-    name: 'Mapping the Spires',
+    name: "Mapping the Spires",
     type: 'Situation',
     tone: 'Scientific',
     nature: 'Anomalous',
-    description: 'Cartography of structural formations.',
+    description: "Cartography of structural formations.",
     resolutionTracks: [
-      { id: 'rk-adv-09-t1', tone: 'Scientific', nature: 'Anomalous', current: 0, target: 3, resultName: 'Mapped (Sacred)', resultTags: ['Religious'] },
-      { id: 'rk-adv-09-t2', tone: 'Hostile', nature: 'Technological', current: 0, target: 3, resultName: 'Mapped (Strategic)', resultTags: ['Royal'] }
-    ]
+      {
+        id: 'rk-adv-09-t1',
+        tone: 'Scientific',
+        nature: 'Anomalous',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Establish an Outpost",
+        resultTags: ['Religious'],
+      },
+      {
+        id: 'rk-adv-09-t2',
+        tone: 'Hostile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Establish an Outpost",
+        resultTags: ['Royal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-10',
-    name: 'Grand Royal Gala (Heavy)',
+    name: "Grand Royal Gala (Heavy)",
     type: 'Situation',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Massive high-society gathering.',
+    description: "Massive high-society gathering.",
     resolutionTracks: [
-      { id: 'rk-adv-10-t1', tone: 'Political', nature: 'Cultural', current: 0, target: 5, resultName: 'Diplomatic Success', resultTags: ['Royal', 'Royal'] },
-      { id: 'rk-adv-10-t2', tone: 'Mercantile', nature: 'Cultural', current: 0, target: 5, resultName: 'Mixed Interests', resultTags: ['Royal', 'Criminal'] }
-    ]
+      {
+        id: 'rk-adv-10-t1',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 5,
+        resultName: "+2 Royal to Royal Embassy",
+        resultTags: ['Royal', 'Royal'],
+      },
+      {
+        id: 'rk-adv-10-t2',
+        tone: 'Mercantile',
+        nature: 'Cultural',
+        current: 0,
+        target: 5,
+        resultName: "+1 Royal, +1 Criminal to Royal Embassy",
+        resultTags: ['Royal', 'Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-11',
-    name: 'Subterranean Dig (Heavy)',
+    name: "Subterranean Dig (Heavy)",
     type: 'Situation',
     tone: 'Scientific',
     nature: 'Technological',
-    description: 'Deep mineral excavation.',
+    description: "Deep mineral excavation.",
     resolutionTracks: [
-      { id: 'rk-adv-11-t1', tone: 'Scientific', nature: 'Technological', current: 0, target: 5, resultName: 'Holy Site Uncovered', resultTags: ['Religious', 'Religious'] },
-      { id: 'rk-adv-11-t2', tone: 'Mercantile', nature: 'Technological', current: 0, target: 5, resultName: 'Wealth Uncovered', resultTags: ['Criminal', 'Criminal'] }
-    ]
+      {
+        id: 'rk-adv-11-t1',
+        tone: 'Scientific',
+        nature: 'Technological',
+        current: 0,
+        target: 5,
+        resultName: "+2 Religious to Crystal Caverns",
+        resultTags: ['Religious', 'Religious'],
+      },
+      {
+        id: 'rk-adv-11-t2',
+        tone: 'Mercantile',
+        nature: 'Technological',
+        current: 0,
+        target: 5,
+        resultName: "+2 Criminal to Crystal Caverns",
+        resultTags: ['Criminal', 'Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-12',
-    name: 'Charter Negotiation (Heavy)',
+    name: "Charter Negotiation (Heavy)",
     type: 'Situation',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Rewriting structural rights.',
+    description: "Rewriting structural rights.",
     resolutionTracks: [
-      { id: 'rk-adv-12-t1', tone: 'Political', nature: 'Cultural', current: 0, target: 5, resultName: 'Royal Charter', resultTags: ['Royal', 'Royal'] },
-      { id: 'rk-adv-12-t2', tone: 'Political', nature: 'Anomalous', current: 0, target: 5, resultName: 'Religious Charter', resultTags: ['Religious', 'Religious'] }
-    ]
+      {
+        id: 'rk-adv-12-t1',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 5,
+        resultName: "+2 Royal to Establish an Outpost",
+        resultTags: ['Royal', 'Royal'],
+      },
+      {
+        id: 'rk-adv-12-t2',
+        tone: 'Political',
+        nature: 'Anomalous',
+        current: 0,
+        target: 5,
+        resultName: "+2 Religious to Establish an Outpost",
+        resultTags: ['Religious', 'Religious'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-13',
-    name: 'Black Market Fence',
+    name: "Black Market Fence",
     type: 'Situation',
     tone: 'Mercantile',
     nature: 'Technological',
-    description: 'Dealing with stolen materials.',
+    description: "Dealing with stolen materials.",
     resolutionTracks: [
-      { id: 'rk-adv-13-t1', tone: 'Mercantile', nature: 'Technological', current: 0, target: 3, resultName: 'Goods Fenced', resultTags: ['Criminal'] },
-      { id: 'rk-adv-13-t2', tone: 'Hostile', nature: 'Technological', current: 0, target: 3, resultName: 'Ring Busted', resultTags: ['Royal'] }
-    ]
+      {
+        id: 'rk-adv-13-t1',
+        tone: 'Mercantile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Crystal Caverns",
+        resultTags: ['Criminal'],
+      },
+      {
+        id: 'rk-adv-13-t2',
+        tone: 'Hostile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Royal Embassy (Bust the ring)",
+        resultTags: ['Royal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-14',
-    name: 'Shrines of Luminescence',
+    name: "Shrines of Luminescence",
     type: 'Situation',
     tone: 'Political',
     nature: 'Anomalous',
-    description: 'Pilgrimage holy sites.',
+    description: "Pilgrimage holy sites.",
     resolutionTracks: [
-      { id: 'rk-adv-14-t1', tone: 'Political', nature: 'Anomalous', current: 0, target: 3, resultName: 'Consecrated', resultTags: ['Religious'] },
-      { id: 'rk-adv-14-t2', tone: 'Mercantile', nature: 'Cultural', current: 0, target: 3, resultName: 'Commercialized', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-adv-14-t1',
+        tone: 'Political',
+        nature: 'Anomalous',
+        current: 0,
+        target: 3,
+        resultName: "+1 Religious to Establish an Outpost",
+        resultTags: ['Religious'],
+      },
+      {
+        id: 'rk-adv-14-t2',
+        tone: 'Mercantile',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Crystal Caverns",
+        resultTags: ['Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-ADV-15',
-    name: 'Corrupt Guard Patrol',
+    name: "Corrupt Guard Patrol",
     type: 'Situation',
     tone: 'Hostile',
     nature: 'Cultural',
-    description: 'Bribing or dealing with authorities.',
+    description: "Bribing or dealing with authorities.",
     resolutionTracks: [
-      { id: 'rk-adv-15-t1', tone: 'Hostile', nature: 'Cultural', current: 0, target: 3, resultName: 'Bribed', resultTags: ['Criminal'] },
-      { id: 'rk-adv-15-t2', tone: 'Political', nature: 'Cultural', current: 0, target: 3, resultName: 'Disciplined', resultTags: ['Royal'] }
-    ]
+      {
+        id: 'rk-adv-15-t1',
+        tone: 'Hostile',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Criminal to Royal Embassy",
+        resultTags: ['Royal', 'Criminal'],
+      },
+      {
+        id: 'rk-adv-15-t2',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Royal Embassy",
+        resultTags: ['Royal'],
+      },
+    ],
   },
   {
     id: 'RK-CHL-01',
-    name: 'Accept a Bribe?',
+    name: "Accept a Bribe?",
     type: 'Situation',
     tone: 'Mercantile',
     nature: 'Cultural',
-    description: 'A tempting underworld offer.',
+    description: "A tempting underworld offer.",
     resolutionTracks: [
-      { id: 'rk-chl-01-t1', tone: 'Mercantile', nature: 'Cultural', current: 0, target: 1, resultName: 'Bribe Taken', resultTags: ['Criminal'] },
-      { id: 'rk-chl-01-t2', tone: 'Political', nature: 'Cultural', current: 0, target: 3, resultName: 'Reported', resultTags: ['Royal'] }
+      {
+        id: 'rk-chl-01-t1',
+        tone: 'Mercantile',
+        nature: 'Cultural',
+        current: 0,
+        target: 1,
+        resultName: "+1 Criminal to Royal Embassy. Reward: Target player gains the 'Laser Rifle' item card.",
+        resultTags: ['Royal', 'Criminal'],
+      },
+      {
+        id: 'rk-chl-01-t2',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "+1 Royal to Royal Embassy (Report the bribery attempt).",
+        resultTags: ['Royal'],
+      },
     ],
-    effects: [
-      { type: 'DRAW_CARD', trigger: 'ON_ACTIVATE', targetTrackTag: 'Criminal' }
-    ]
   },
   {
     id: 'RK-CHL-02',
-    name: 'Cave-in at the Cavern!',
+    name: "Cave-in at the Cavern!",
     type: 'Situation',
     tone: 'Hostile',
     nature: 'Technological',
-    description: 'Rubble blocking entry.',
+    description: "Rubble blocking entry.. Passive: While unresolved, Scientific cards cannot advance The Crystal Caverns.",
     resolutionTracks: [
-      { id: 'rk-chl-02-t1', tone: 'Hostile', nature: 'Technological', current: 0, target: 2, resultName: 'Cleared', resultTags: [] }
+      {
+        id: 'rk-chl-02-t1',
+        tone: 'Hostile',
+        nature: 'Technological',
+        current: 0,
+        target: 2,
+        resultName: "Clear the rubble; remove Situation from play.",
+      },
     ],
-    passiveEffects: [
-      { type: 'PREVENT_ADVANCE', sourceTone: 'Scientific', targetCardName: 'The Crystal Caverns' }
-    ]
   },
   {
     id: 'RK-CHL-03',
-    name: 'Sovereign Bureaucracy',
+    name: "Sovereign Bureaucracy",
     type: 'Situation',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Red tape slowing actions.',
+    description: "Red tape slowing actions.. Passive: Political tactics deployed by any player can only Target this situation.",
     resolutionTracks: [
-      { id: 'rk-chl-03-t1', tone: 'Political', nature: 'Cultural', current: 0, target: 2, resultName: 'Resolved', resultTags: [] }
+      {
+        id: 'rk-chl-03-t1',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 2,
+        resultName: "Overcome the red tape; remove Situation.",
+      },
     ],
-    passiveEffects: [
-      { type: 'FORCE_TARGET', sourceTone: 'Political', targetCardName: 'Sovereign Bureaucracy' }
-    ]
   },
   {
     id: 'RK-CHL-04',
-    name: 'Smuggler Ambush',
+    name: "Smuggler Ambush",
     type: 'Situation',
     tone: 'Hostile',
     nature: 'Technological',
-    description: 'Hostile criminal intercept.',
+    description: "Hostile criminal intercept.. Passive: At the end of each turn, reduce a random Situation track by 1 point.",
     resolutionTracks: [
-      { id: 'rk-chl-04-t1', tone: 'Hostile', nature: 'Technological', current: 0, target: 3, resultName: 'Secured', resultTags: [] }
+      {
+        id: 'rk-chl-04-t1',
+        tone: 'Hostile',
+        nature: 'Technological',
+        current: 0,
+        target: 3,
+        resultName: "Secure the perimeter; remove Situation.",
+      },
     ],
-    effects: [
-      { type: 'REDUCE_TRACK', trigger: 'PLANET_TURN', amount: 1 }
-    ]
   },
   {
     id: 'RK-CHL-05',
-    name: 'Unstable Radiation',
+    name: "Unstable Radiation",
     type: 'Situation',
     tone: 'Scientific',
     nature: 'Anomalous',
-    description: 'Energy leakage.',
+    description: "Energy leakage.. Passive: While active, all player Tactics cards require 1 additional action to activate.",
     resolutionTracks: [
-      { id: 'rk-chl-05-t1', tone: 'Scientific', nature: 'Anomalous', current: 0, target: 2, resultName: 'Shielded', resultTags: [] }
+      {
+        id: 'rk-chl-05-t1',
+        tone: 'Scientific',
+        nature: 'Anomalous',
+        current: 0,
+        target: 2,
+        resultName: "Shield the leaks; remove Situation from play.",
+      },
     ],
-    passiveEffects: [
-      { type: 'MODIFY_ACTION_COST', sourceCardType: 'Tactic', amount: 1 }
-    ]
   },
   {
     id: 'RK-CHL-06',
-    name: 'Courtly Gossip',
+    name: "Courtly Gossip",
     type: 'Situation',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Whispers and rumors.',
+    description: "Whispers and rumors.",
     resolutionTracks: [
-      { id: 'rk-chl-06-t1', tone: 'Political', nature: 'Cultural', current: 0, target: 1, resultName: 'Defused', resultTags: ['Royal'] },
-      { id: 'rk-chl-06-t2', tone: 'Mercantile', nature: 'Cultural', current: 0, target: 1, resultName: 'Sold', resultTags: ['Criminal'] }
-    ]
+      {
+        id: 'rk-chl-06-t1',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 1,
+        resultName: "Defuse rumors: +1 Royal to Royal Embassy.",
+        resultTags: ['Royal'],
+      },
+      {
+        id: 'rk-chl-06-t2',
+        tone: 'Mercantile',
+        nature: 'Cultural',
+        current: 0,
+        target: 1,
+        resultName: "Sell the info: +1 Criminal to Royal Embassy.",
+        resultTags: ['Royal', 'Criminal'],
+      },
+    ],
   },
   {
     id: 'RK-CHL-07',
-    name: 'Slum Shakedown',
+    name: "Slum Shakedown",
     type: 'Situation',
     tone: 'Hostile',
     nature: 'Cultural',
-    description: 'Gang interference.',
+    description: "Gang interference.. Passive: While active, Mercantile Tactics cannot Target Situations.",
     resolutionTracks: [
-      { id: 'rk-chl-07-t1', tone: 'Hostile', nature: 'Cultural', current: 0, target: 2, resultName: 'Dispersed', resultTags: [] }
+      {
+        id: 'rk-chl-07-t1',
+        tone: 'Hostile',
+        nature: 'Cultural',
+        current: 0,
+        target: 2,
+        resultName: "Disperse the gang; remove Situation.",
+      },
     ],
-    passiveEffects: [
-      { type: 'PREVENT_ACTION', sourceTone: 'Mercantile' }
-    ]
   },
   {
     id: 'RK-CHL-08',
-    name: 'Religious Zealotry',
+    name: "Religious Zealotry",
     type: 'Situation',
     tone: 'Political',
     nature: 'Anomalous',
-    description: 'Extremist disruption.',
+    description: "Extremist disruption.. Passive: While active, Royal Objective Tracks cannot be advanced. Situations that would resolve when fulfilled remain on the board, and may still be resolved via other Tracks.",
     resolutionTracks: [
-      { id: 'rk-chl-08-t1', tone: 'Political', nature: 'Anomalous', current: 0, target: 2, resultName: 'Disarmed', resultTags: [] }
+      {
+        id: 'rk-chl-08-t1',
+        tone: 'Political',
+        nature: 'Anomalous',
+        current: 0,
+        target: 2,
+        resultName: "Disarm the crowd; remove Situation.",
+      },
     ],
-    passiveEffects: [
-      { type: 'PREVENT_ADVANCE', targetTrackTag: 'Royal' }
-    ]
   },
   {
     id: 'RK-CHL-09',
-    name: 'Counterfeit Crystals',
+    name: "Counterfeit Crystals",
     type: 'Situation',
     tone: 'Mercantile',
     nature: 'Anomalous',
-    description: 'Fake mineral trading.',
+    description: "Fake mineral trading.. Passive: If unresolved after 3 turns, self-discards and adds 1 Criminal progress to Crystal Caverns.",
     resolutionTracks: [
-      { id: 'rk-chl-09-t1', tone: 'Mercantile', nature: 'Anomalous', current: 0, target: 2, resultName: 'Authenticated', resultTags: [] }
+      {
+        id: 'rk-chl-09-t1',
+        tone: 'Mercantile',
+        nature: 'Anomalous',
+        current: 0,
+        target: 2,
+        resultName: "Authenticate goods. Reward: Next turn, player gets 1 action point refund.",
+      },
     ],
-    effects: [
-      { type: 'REDUCE_TRACK', trigger: 'PLANET_TURN', amount: 1, targetCardName: 'The Crystal Caverns', targetTrackTag: 'Religious' }
-    ],
-    tags: ['SelfDiscardAfter3Turns']
   },
   {
     id: 'RK-CHL-10',
-    name: 'Royal Escort Demands',
+    name: "Royal Escort Demands",
     type: 'Situation',
     tone: 'Political',
     nature: 'Cultural',
-    description: 'Strict royal demands.',
+    description: "Strict royal demands.. Passive: While active, any advancements to Criminal tracks advance 1 point less.",
     resolutionTracks: [
-      { id: 'rk-chl-10-t1', tone: 'Political', nature: 'Cultural', current: 0, target: 3, resultName: 'Accommodated', resultTags: [] }
+      {
+        id: 'rk-chl-10-t1',
+        tone: 'Political',
+        nature: 'Cultural',
+        current: 0,
+        target: 3,
+        resultName: "Accommodate the guards; remove Situation.",
+      },
     ],
-    passiveEffects: [
-      { type: 'MULTIPLY_ADVANCE', factor: 0.5, targetTrackTag: 'Criminal' }
-    ]
-  }
+  },
 ];
 
-export const ROYAL_KOOG_DECK: Card[] = [
-  ...ROYAL_KOOG_SITUATIONS
+export const ROYAL_KOOG_REWARDS: Card[] = [
+  {
+    id: 'RK-REW-01',
+    name: "Laser Rifle",
+    type: 'Reward',
+    tone: 'Hostile',
+    nature: 'Technological',
+    description: "Advance a Hostile track twice."
+  }
 ];

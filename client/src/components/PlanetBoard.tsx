@@ -5,7 +5,7 @@ interface PlanetBoardProps {
   objectives: Card[];
   situations: Card[];
   onSelectObjective: (cardId: string) => void;
-  selectedObjectiveId?: string;
+  selectedObjectiveId?: string | undefined;
 }
 
 const PlanetBoard: React.FC<PlanetBoardProps> = ({ objectives, situations, onSelectObjective, selectedObjectiveId }) => {
