@@ -91,6 +91,42 @@ export class Game {
     return this.state;
   }
 
+  public getStateForPlayer(viewerPlayerId: string | null): GameState {
+    // Clone state so we don't mutate the master state
+    const filtered = JSON.parse(JSON.stringify(this.state)) as GameState;
+
+    const allLockedIn = filtered.players.every(p => p.lockedIn);
+
+    filtered.players = filtered.players.map(p => {
+      if (p.id === viewerPlayerId) {
+        // Keep in full
+        return p;
+      } else {
+        // Redact other player's hand cards with count preserved
+        p.hand = p.hand.map((_, idx) => ({
+          id: `hidden-${idx}`,
+          name: 'Hidden Card',
+          type: 'Tactic',
+          tone: 'Hostile',
+          nature: 'Biological',
+          description: 'This is a hidden card in another player\'s hand.'
+        }));
+
+        // Redact selected actions unless everyone is locked in
+        if (!allLockedIn) {
+          p.selectedActions = p.selectedActions.map(action => ({
+            type: 'PLAY', // dummy type
+            playerId: p.id
+          }));
+        }
+
+        return p;
+      }
+    });
+
+    return filtered;
+  }
+
   public random(effect: string): number {
     const turnNumber = this.state.turnCount;
     const seedStateBefore = this.state.rngState;

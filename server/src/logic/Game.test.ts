@@ -425,4 +425,39 @@ describe('Away Team Game Engine Tests', () => {
     assert.strictEqual(chosenTracks.has('track-B2'), true);
     assert.strictEqual(chosenTracks.has('track-B1'), false);
   });
+
+  test('State Filtering (Hidden Info)', () => {
+    const game = new Game(['Security Officer', 'Xenoethnologist']);
+    const p0 = game.getState().players[0]!;
+    const p1 = game.getState().players[1]!;
+
+    // Setup a planned action for p0
+    game.handleAction({ type: 'DRAW', playerId: p0.id });
+
+    // Filter state for p0 (Security Officer viewer)
+    const stateForP0 = game.getStateForPlayer(p0.id);
+    const viewerP0 = stateForP0.players.find(p => p.id === p0.id)!;
+    const otherP1 = stateForP0.players.find(p => p.id === p1.id)!;
+
+    // Security Officer should see their own hand and selected actions
+    assert.notStrictEqual(viewerP0.hand[0]?.name, 'Hidden Card');
+    assert.strictEqual(viewerP0.selectedActions.length, 1);
+    assert.strictEqual(viewerP0.selectedActions[0]?.type, 'DRAW');
+
+    // Security Officer should see redacted hand for Xenoethnologist
+    assert.strictEqual(otherP1.hand[0]?.name, 'Hidden Card');
+
+    // Filter state for p1 (Xenoethnologist viewer)
+    const stateForP1 = game.getStateForPlayer(p1.id);
+    const otherP0ForP1 = stateForP1.players.find(p => p.id === p0.id)!;
+    const viewerP1ForP1 = stateForP1.players.find(p => p.id === p1.id)!;
+
+    // Xenoethnologist should see their own hand in full
+    assert.notStrictEqual(viewerP1ForP1.hand[0]?.name, 'Hidden Card');
+
+    // Xenoethnologist should see redacted actions for Security Officer
+    assert.strictEqual(otherP0ForP1.selectedActions.length, 1);
+    assert.notStrictEqual(otherP0ForP1.selectedActions[0]?.type, 'DRAW'); // Redacted to dummy action
+    assert.strictEqual(otherP0ForP1.selectedActions[0]?.cardId, undefined);
+  });
 });
