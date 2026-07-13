@@ -86,6 +86,14 @@ export interface Player {
   pendingExtraActions: number; // Extra actions to be carried over to the next turn
 }
 
+export interface RngLogEntry {
+  turnNumber: number;
+  effect: string;
+  seedStateBefore: number;
+  seedStateAfter: number;
+  result: number;
+}
+
 export interface GameState {
   id: string;
   players: Player[];
@@ -103,6 +111,9 @@ export interface GameState {
     title: string;
     isVictory: boolean;
   } | undefined;
+  seed: number;
+  rngState: number;
+  rngLog: RngLogEntry[];
   // Dynamic Game Engine State to support advanced card effects:
   playerOrder: string[]; // Sequential play order for the current turn
   doubleTargetTracks?: string[] | undefined; // Track IDs where the next Tactic happens twice this turn

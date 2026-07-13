@@ -10,11 +10,38 @@ import {
 export class Game {
   private state: GameState;
 
-  constructor(playerNames: string[]) {
+  constructor(playerNames: string[], seed?: number) {
+    const initialSeed = seed !== undefined ? seed : Math.floor(Math.random() * 2147483647);
+
+    this.state = {
+      id: Math.random().toString(36).substr(2, 9),
+      players: [],
+      planetDeck: [],
+      planetObjectives: [],
+      planetSituations: [],
+      phase: 'PLAYER_ACTION',
+      turnCount: 1,
+      history: ['Game started.'],
+      victory: false,
+      defeat: false,
+      resolutionLog: [],
+      scenarioCounters: {},
+      playerOrder: [],
+      seed: initialSeed,
+      rngState: initialSeed,
+      rngLog: [],
+      doubleTargetTracks: [],
+      expertsTargetedTracks: [],
+      blockedSituationIdsThisTurn: [],
+      blockedSituationIdsNextTurn: [],
+      tracksAdvancedThisTurn: [],
+      tracksAdvancedLastTurn: [],
+    };
+
     // Determine player decks
     const players: Player[] = playerNames.map((name, index) => {
       const isSO = name.toLowerCase().includes('security') || index === 0;
-      const deck = this.shuffle(isSO ? [...SECURITY_OFFICER_DECK] : [...XENOETHNOLOGIST_DECK]);
+      const deck = this.shuffle(isSO ? [...SECURITY_OFFICER_DECK] : [...XENOETHNOLOGIST_DECK], `Player ${index} deck setup`);
       return {
         id: `player-${index}`,
         name,
@@ -33,8 +60,8 @@ export class Game {
       p.hand = p.deck.splice(0, 5);
     });
 
-    const planetDeck = this.shuffle([...ROYAL_KOOG_SITUATIONS]);
-    const availableObjectives = this.shuffle([...ROYAL_KOOG_OBJECTIVES]);
+    const planetDeck = this.shuffle([...ROYAL_KOOG_SITUATIONS], 'Planet deck setup');
+    const availableObjectives = this.shuffle([...ROYAL_KOOG_OBJECTIVES], 'Objectives setup');
     const planetObjectives: Card[] = [];
     const planetSituations: Card[] = [];
 
@@ -51,41 +78,71 @@ export class Game {
 
     // Randomize initial play order
     const playerIds = players.map(p => p.id);
-    const randomizedOrder = this.shuffle([...playerIds]);
+    const randomizedOrder = this.shuffle([...playerIds], 'Initial play order setup');
 
-    this.state = {
-      id: Math.random().toString(36).substr(2, 9),
-      players,
-      planetDeck,
-      planetObjectives,
-      planetSituations,
-      phase: 'PLAYER_ACTION',
-      turnCount: 1,
-      history: ['Game started.'],
-      victory: false,
-      defeat: false,
-      resolutionLog: [],
-      scenarioCounters: {},
-      playerOrder: randomizedOrder,
-      doubleTargetTracks: [],
-      expertsTargetedTracks: [],
-      blockedSituationIdsThisTurn: [],
-      blockedSituationIdsNextTurn: [],
-      tracksAdvancedThisTurn: [],
-      tracksAdvancedLastTurn: [],
-    };
+    this.state.players = players;
+    this.state.planetDeck = planetDeck;
+    this.state.planetObjectives = planetObjectives;
+    this.state.planetSituations = planetSituations;
+    this.state.playerOrder = randomizedOrder;
   }
 
   public getState(): GameState {
     return this.state;
   }
 
-  private shuffle<T>(array: T[]): T[] {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j] as T, array[i] as T];
+  public random(effect: string): number {
+    const turnNumber = this.state.turnCount;
+    const seedStateBefore = this.state.rngState;
+
+    // Mulberry32 step
+    let z = (this.state.rngState += 0x6D2B79F5) | 0;
+    z = Math.imul(z ^ (z >>> 15), z | 1);
+    z ^= z + Math.imul(z ^ (z >>> 7), z | 61);
+    const result = ((z ^ (z >>> 14)) >>> 0) / 4294967296;
+
+    const seedStateAfter = this.state.rngState;
+
+    this.state.rngLog.push({
+      turnNumber,
+      effect,
+      seedStateBefore,
+      seedStateAfter,
+      result
+    });
+
+    return result;
+  }
+
+  public randomInt(max: number, effect: string): number {
+    const r = this.random(effect);
+    return Math.floor(r * max);
+  }
+
+  public randomElement<T>(array: T[], effect: string): T {
+    const index = this.randomInt(array.length, `${effect} (select element)`);
+    return array[index]!;
+  }
+
+  private shuffle<T>(array: T[], effect: string): T[] {
+    const result = [...array];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = this.randomInt(i + 1, `${effect} (shuffle step ${i})`);
+      [result[i], result[j]] = [result[j] as T, result[i] as T];
     }
-    return array;
+    return result;
+  }
+
+  public getRandomSituationTrack(effect: string, filterFn?: (item: { track: ResolutionTrack; parent: Card }) => boolean): { track: ResolutionTrack; parent: Card } | undefined {
+    const list: { track: ResolutionTrack; parent: Card }[] = [];
+    this.state.planetSituations.forEach(card => {
+      card.resolutionTracks?.forEach(t => {
+        list.push({ track: t, parent: card });
+      });
+    });
+    const filteredList = filterFn ? list.filter(filterFn) : list;
+    if (filteredList.length === 0) return undefined;
+    return this.randomElement(filteredList, effect);
   }
 
   // Get active tones for a track considering base, temp, permanent, and policies
@@ -1061,11 +1118,9 @@ export class Game {
     // Smuggler Ambush (RK-CHL-04): Passive end of turn reduce a random Situation track by 1 point
     const isSmugglerActive = this.state.planetSituations.some(s => s.id === 'RK-CHL-04');
     if (isSmugglerActive) {
-      const situTracks = this.state.planetSituations.flatMap(s => s.resolutionTracks || []);
-      const validTrack = situTracks.find(t => t.current > 0);
-      if (validTrack) {
-        const sitParent = this.state.planetSituations.find(s => s.resolutionTracks?.includes(validTrack))!;
-        this.reduceTrackBy(validTrack, sitParent, 1);
+      const randomTrackItem = this.getRandomSituationTrack('Smuggler Ambush reduction', item => item.track.current > 0);
+      if (randomTrackItem) {
+        this.reduceTrackBy(randomTrackItem.track, randomTrackItem.parent, 1);
         this.state.resolutionLog.push(`[Smuggler Ambush] End of turn track reduction applied.`);
       }
     }
